@@ -138,8 +138,10 @@ sub _onpub_place_armies {
 
     # update the gui to reflect the new state.
     my $c = $h->{canvas};
-    $c->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies', 1) );
+    $c->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies',  1) );
     $c->CanvasBind( '<3>', $s->postback('_canvas_click_place_armies', -1) );
+    $c->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies',  1) );
+    $c->CanvasBind( '<5>', $s->postback('_canvas_click_place_armies', -1) );
     $h->{labels}{place_armies}->configure(@ENON);
 
     # update status msg
@@ -324,29 +326,53 @@ sub _onpriv_start {
     # frame for game state
     my $fgs = $top->Frame->pack(@TOP, @XFILL2);
     $fgs->Label(-text=>'Game state: ')->pack(@LEFT);
-    my $lab1 = $fgs->Label(-text=>'place armies', @ENOFF)->pack(@LEFT, @XFILL2);
-    my $but_redo = $fgs->Button(
+    my $labp = $fgs->Label(-text=>'place armies', @ENOFF)->pack(@LEFT, @XFILL2);
+    my $but_predo = $fgs->Button(
         -command => $s->postback('_but_place_armies_redo'),
         -image   => $h->{images}{actreload16},
         @ENOFF,
     )->pack(@LEFT);
-    my $but_done = $fgs->Button(
+    my $but_pdone = $fgs->Button(
         -command => $s->postback('_but_place_armies_done'),
         -image   => $h->{images}{navforward16},
         @ENOFF,
     )->pack(@LEFT);
+    my $laba = $fgs->Label(-text=>'attack', @ENOFF)->pack(@LEFT, @XFILL2);
+    my $but_adone = $fgs->Button(
+        -command => $s->postback('_but_attack_done'),
+        -image   => $h->{images}{navforward16},
+        @ENOFF,
+    )->pack(@LEFT);
+    my $labm = $fgs->Label(-text=>'move armies', @ENOFF)->pack(@LEFT, @XFILL2);
+    my $but_mdone = $fgs->Button(
+        -command => $s->postback('_but_move_armies_done'),
+        -image   => $h->{images}{playstop16},
+        @ENOFF,
+    )->pack(@LEFT);
     #$fgs->Button(-text=>'attack')->pack(@LEFT, @XFILL2);
     #$fgs->Button(-text=>'move armies')->pack(@LEFT, @XFILL2);
-    $h->{labels}{place_armies} = $lab1;
-    $h->{buttons}{place_armies_redo} = $but_redo;
-    $h->{buttons}{place_armies_done} = $but_done;
-    $h->{balloon}->attach($but_redo, -msg=>'undo all');
-    $h->{balloon}->attach($but_done, -msg=>'ready for attack');
+    $h->{labels}{place_armies} = $labp;
+    $h->{labels}{attack}       = $laba;
+    $h->{labels}{move_armies}  = $labm;
+    $h->{buttons}{place_armies_redo} = $but_predo;
+    $h->{buttons}{place_armies_done} = $but_pdone;
+    $h->{balloon}->attach($but_predo, -msg=>'undo all');
+    $h->{balloon}->attach($but_pdone, -msg=>'ready for attack');
+    $h->{balloon}->attach($but_adone, -msg=>'consolidate');
+    $h->{balloon}->attach($but_mdone, -msg=>'turn finished');
 
-    # create canvas
+    # create canvas, removing class bindings
     my $c = $top->Canvas->pack;
-    $c->CanvasBind( '<Motion>', [$s->postback('_canvas_motion'), Ev('x'), Ev('y')] );
     $h->{canvas} = $c;
+    $c->CanvasBind( '<Motion>', [$s->postback('_canvas_motion'), Ev('x'), Ev('y')] );
+    foreach my $button ( qw{ 4 5 6 7 } ) {
+        $top->bind('Tk::Canvas', "<Button-$button>",       undef);
+        $top->bind('Tk::Canvas', "<Shift-Button-$button>", undef);
+    }
+    foreach my $key ( qw{ Down End Home Left Next Prior Right Up } ) {
+        $top->bind('Tk::Canvas', "<Key-$key>", undef);
+        $top->bind('Tk::Canvas', "<Control-Key-$key>", undef);
+    }
 
     # status bar
     $h->{status} = '';
@@ -383,6 +409,8 @@ sub _ongui_but_place_armies_done {
     my $c = $h->{canvas};
     $c->CanvasBind('<1>', undef);
     $c->CanvasBind('<3>', undef);
+    $c->CanvasBind('<4>', undef);
+    $c->CanvasBind('<5>', undef);
     $h->{labels}{place_armies}->configure(@ENOFF);
     $h->{buttons}{place_armies_redo}->configure(@ENOFF);
     $h->{buttons}{place_armies_done}->configure(@ENOFF);
@@ -418,6 +446,7 @@ sub _ongui_but_place_armies_redo {
     $h->{buttons}{place_armies_done}->configure(@ENOFF);
     # allow adding armies
     $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies', 1) );
+    $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies', 1) );
 
     # reset initials
     my $nb = 0;
@@ -470,6 +499,7 @@ sub _ongui_canvas_click_place_armies {
 
     my $curplayer = $h->{curplayer};
     my $country   = $h->{country};
+    return unless defined $country;
     my $id        = $country->id;
     my ($diff)    = @$args;
 
@@ -503,12 +533,14 @@ sub _ongui_canvas_click_place_armies {
         $h->{buttons}{place_armies_done}->configure(@ENON);
         # forbid adding armies
         $h->{canvas}->CanvasBind('<1>', undef);
+        $h->{canvas}->CanvasBind('<4>', undef);
 
     } else {
         # forbid button next phase to be clicked
         $h->{buttons}{place_armies_done}->configure(@ENOFF);
         # allow adding armies
         $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies', 1) );
+        $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies', 1) );
     }
 }
 #
