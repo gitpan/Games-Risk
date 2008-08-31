@@ -1,0 +1,27 @@
+bin/prisk
+Build.PL
+Changes
+lib/Games/Risk.pm
+lib/Games/Risk/AI.pm
+lib/Games/Risk/AI/Dumb.pm
+lib/Games/Risk/GUI.pm
+lib/Games/Risk/GUI/Board.pm
+lib/Games/Risk/GUI/icons/player-active.png
+lib/Games/Risk/GUI/icons/player-inactive.png
+lib/Games/Risk/GUI/icons/tk_icons
+lib/Games/Risk/Heap.pm
+lib/Games/Risk/Map.pm
+lib/Games/Risk/Map/Continent.pm
+lib/Games/Risk/Map/Country.pm
+lib/Games/Risk/maps/risk.map
+lib/Games/Risk/maps/risk_background.jpg
+lib/Games/Risk/maps/risk_map.gif
+lib/Games/Risk/Player.pm
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/0-load.t
+t/9-author/pod-coverage.t
+t/9-author/pod.t
