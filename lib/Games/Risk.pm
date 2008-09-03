@@ -17,7 +17,7 @@ use Games::Risk::GUI::Board;
 use Games::Risk::Heap;
 use Games::Risk::Map;
 use Games::Risk::Player;
-use List::Util   qw{ shuffle };
+use List::Util   qw{ min shuffle };
 use Module::Util qw{ find_installed };
 use POE;
 use Readonly;
@@ -25,8 +25,9 @@ use aliased 'POE::Kernel' => 'K';
 
 
 # Public variables of the module.
-our $VERSION = '0.2.5';
+our $VERSION = '0.3.0';
 
+Readonly my $ATTACK_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $TURN_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $WAIT      => 0.100; # FIXME: hardcoded
 
@@ -63,15 +64,19 @@ sub spawn {
             _place_armies_initial   => \&_onpriv_place_armies_initial,
             _initial_armies_placed  => \&_onpriv_turn_begin,
             _begin_turn             => \&_onpriv_turn_begin,
-            _turn_began             => \&_onpriv_player_next,
-            _place_armies           => \&_onpriv_place_armies,
-            _armies_placed          => \&_onpriv_player_next,
+            _turn_begun             => \&_onpriv_player_next,
+            _player_begun           => \&_onpriv_place_armies,
+            _armies_placed          => \&_onpriv_attack,
+            _attack_done            => \&_onpriv_attack_done,
+            _attack_end             => \&_onpriv_player_next,
             # public events
             window_created      => \&_onpub_window_created,
             map_loaded          => \&_onpub_map_loaded,
             player_created      => \&_onpub_player_created,
             initial_armies_placed       => \&_onpub_initial_armies_placed,
             armies_placed       => \&_onpub_armies_placed,
+            attack                  => \&_onpub_attack,
+            attack_end              => \&_onpub_attack_end,
         },
     );
     return $session->ID;
@@ -95,6 +100,7 @@ sub _onpub_armies_placed {
     # FIXME: check country belongs to curplayer
     # FIXME: check validity regarding total number
     # FIXME: check validity regarding continent
+    # FIXME: check negative values
     my $left = $h->armies - $nb;
     $h->armies($left);
 
@@ -104,6 +110,70 @@ sub _onpub_armies_placed {
     if ( $left == 0 ) {
         K->delay_set( '_armies_placed' => $WAIT );
     }
+}
+
+
+#
+# event: attack( $src, $dst );
+#
+# fired when a player wants to attack country $dst from $src.
+#
+sub _onpub_attack {
+    my ($h, $src, $dst) = @_[HEAP, ARG0, ARG1];
+
+    my $player = $h->curplayer;
+
+    # FIXME: check player is curplayer
+    # FIXME: check src belongs to curplayer
+    # FIXME: check dst doesn't belong to curplayer
+    # FIXME: check countries src & dst are neighbours
+    # FIXME: check src has at least 1 army
+
+    my $armies_src = $src->armies - 1; # 1 army to hold $src
+    my $armies_dst = $dst->armies;
+
+
+    # roll the dices for the attacker
+    my $nbdice_src = min $armies_src, 3; # don't attack with more than 3 armies
+    my @attack;
+    push( @attack, int(rand(6)+1) ) for 1 .. $nbdice_src;
+    @attack = reverse sort @attack;
+    $h->nbdice($nbdice_src); # store number of attack dice, needed for invading
+
+    # roll the dices for the defender. don't defend with 2nd dice if we
+    # don't have at least 50% luck to win with it. FIXME: customizable?
+    my $nbdice_dst = $nbdice_src > 1
+        ? $attack[1] > 4 ? 1 : 2
+        : 2; # defend with 2 dices if attacker has only one
+    $nbdice_dst = min $armies_dst, $nbdice_dst;
+    my @defence;
+    push( @defence, int(rand(6)+1) ) for 1 .. $nbdice_dst;
+    @defence = reverse sort @defence;
+
+    # compute losses
+    my @losses  = (0, 0);
+    $losses[ $attack[0] <= $defence[0] ? 0 : 1 ]++;
+    $losses[ $attack[1] <= $defence[1] ? 0 : 1 ]++ if $nbdice_dst == 2;
+
+    # update countries
+    $src->armies( $src->armies - $losses[0] );
+    $dst->armies( $dst->armies - $losses[1] );
+
+    # post damages
+    # FIXME: only for human player?
+    K->post('board', 'attack_info', $src, $dst, \@attack, \@defence); # FIXME: broadcast
+
+    K->delay_set( '_attack_done' => $ATTACK_WAIT, $src, $dst );
+}
+
+
+#
+# event: attack_end();
+#
+# fired when a player does not want to attack anymore during her turn.
+#
+sub _onpub_attack_end {
+    K->delay_set( '_attack_end' => $WAIT );
 }
 
 
@@ -122,7 +192,7 @@ sub _onpub_initial_armies_placed {
 
     $country->armies( $country->armies + $nb );
     K->post('board', 'chnum', $country); # FIXME: broadcast
-    K->delay_set( '_place_armies_initial' => $TURN_WAIT );
+    K->delay_set( '_place_armies_initial' => $WAIT );
 }
 
 
@@ -200,6 +270,59 @@ sub _onpriv_assign_countries {
 
     # go on to the next phase
     K->yield( '_countries_assigned' );
+}
+
+
+#
+# start the attack phase for curplayer
+#
+sub _onpriv_attack {
+    my $h = $_[HEAP];
+
+    my $player = $h->curplayer;
+    my $session;
+    given ($player->type) {
+        when ('ai')    { $session = $player->name; }
+        when ('human') { $session = 'board'; } #FIXME: broadcast
+    }
+    K->post($session, 'attack');
+}
+
+
+#
+# event: _attack_done($src, $dst)
+#
+# check the outcome of attack of $dst from $src only used as a
+# temporization, so this handler will always serve the same event.
+#
+sub _onpriv_attack_done {
+    my ($h, $src, $dst) = @_[HEAP, ARG0..$#_];
+
+    # update gui
+    K->post('board', 'chnum', $src); # FIXME: broadcast
+    K->post('board', 'chnum', $dst); # FIXME: broadcast
+
+    # get who to send msg to
+    my $player = $h->curplayer;
+    my $session;
+    given ($player->type) {
+        when ('ai')    { $session = $player->name; }
+        when ('human') { $session = 'board'; } #FIXME: broadcast
+    }
+
+    # check outcome
+    if ( $dst->armies <= 0 ) {
+        # all your base are belong to us! :-)
+        my $session;
+        given ($player->type) {
+            when ('ai')    { $session = $player->name; }
+            when ('human') { $session = 'board'; } #FIXME: broadcast
+        }
+        K->post($session, 'attack_move', $src, $dst, $h->nbdice);
+    } else {
+        K->post($session, 'attack');
+    }
+
 }
 
 
@@ -341,7 +464,7 @@ sub _onpriv_player_next {
     # update various guis with current player
     K->post('board', 'player_active', $player); # FIXME: broadcast
 
-    K->delay_set('_place_armies'=>$TURN_WAIT);
+    K->delay_set('_player_begun'=>$TURN_WAIT);
 }
 
 
@@ -355,7 +478,7 @@ sub _onpriv_turn_begin {
     $h->players_reset;
 
     # placing armies
-    K->yield('_turn_began');
+    K->yield('_turn_begun');
 }
 
 

@@ -44,6 +44,12 @@ my @ENOFF   = ( -state => 'disabled' );
 #--
 # Constructor
 
+#
+# my $id = Games::Risk::GUI->spawn( \%params );
+#
+# create a new window containing the board used for the game. refer
+# to the embedded pod for an explanation of the supported options.
+#
 sub spawn {
     my ($type, $args) = @_;
 
@@ -54,14 +60,22 @@ sub spawn {
             _start               => \&_onpriv_start,
             _stop                => sub { warn "gui-board shutdown\n" },
             # gui events
+            _but_attack_done               => \&_ongui_but_attack_done,
+            _but_attack_redo               => \&_ongui_but_attack_redo,
             _but_place_armies_done               => \&_ongui_but_place_armies_done,
             _but_place_armies_redo               => \&_ongui_but_place_armies_redo,
-            _canvas_click_place_armies           => \&_ongui_canvas_click_place_armies,
-            _canvas_click_place_armies_initial   => \&_ongui_canvas_click_place_armies_initial,
+            _canvas_attack_cancel          => \&_ongui_canvas_attack_cancel,
+            _canvas_attack_from            => \&_ongui_canvas_attack_from,
+            _canvas_attack_target          => \&_ongui_canvas_attack_target,
+            _canvas_place_armies           => \&_ongui_canvas_place_armies,
+            _canvas_place_armies_initial   => \&_ongui_canvas_place_armies_initial,
             _canvas_motion       => \&_ongui_canvas_motion,
             # public events
-            chnum                => \&_onpriv_country_redraw,
-            chown                => \&_onpriv_country_redraw,
+            attack                     => \&_onpub_attack,
+            attack_info                => \&_onpub_attack_info,
+            attack_move                => \&_onpub_attack_move,
+            chnum                      => \&_onpub_country_redraw,
+            chown                      => \&_onpub_country_redraw,
             load_map             => \&_onpub_load_map,
             place_armies               => \&_onpub_place_armies,
             place_armies_initial       => \&_onpub_place_armies_initial,
@@ -75,9 +89,118 @@ sub spawn {
 
 
 #--
-# Event handlers
+# EVENT HANDLERS
 
 # -- public events
+
+#
+# event: attack();
+#
+# request user to start attacking at will.
+#
+sub _onpub_attack {
+    my ($h, $s) = @_[HEAP, SESSION];
+
+    # update the gui to reflect the new state.
+    my $c = $h->{canvas};
+    $c->CanvasBind( '<1>', $s->postback('_canvas_attack_from') );
+    $c->CanvasBind( '<3>', $s->postback('_canvas_attack_cancel') );
+    $h->{labels}{attack}->configure(@ENON);
+    $h->{buttons}{attack_done}->configure(@ENON);
+    $h->{toplevel}->bind('<Key-Return>', $s->postback('_but_attack_done'));
+
+    if ( defined($h->{src}) && defined($h->{dst}) && $h->{src}->armies>1 ) {
+        $h->{buttons}{attack_redo}->configure(@ENON);
+        $h->{toplevel}->bind('<Key-space>', $s->postback('_but_attack_redo'));
+    } else {
+        $h->{buttons}{attack_redo}->configure(@ENOFF);
+        $h->{toplevel}->bind('<Key-space>', undef);
+    }
+
+    # update status msg
+    $h->{status} = 'Attacking from ...';
+}
+
+
+#
+# event: attack_info($src, $dst, \@attack, \@defence);
+#
+# Give the result of $dst attack from $src: @attack and @defence dices
+sub _onpub_attack_info {
+    my ($h, $src, $dst, $attack, $defence, $loss_src, $loss_dst) = @_[HEAP, ARG0..$#_];
+
+    # update status msg
+    $h->{status} = 'Attacking ' . $dst->name . ' from ' . $src->name;
+
+    # update attack dices
+    foreach my $i ( 1 .. 3 ) {
+        my $d = $attack->[$i-1] // 0;
+        $h->{labels}{"attack_$i"}->configure(-image=>$h->{images}{"dice_$d"});
+    }
+
+    # update defence dices
+    foreach my $i ( 1 .. 2 ) {
+        my $d = $defence->[$i-1] // 0;
+        $h->{labels}{"defence_$i"}->configure(-image=>$h->{images}{"dice_$d"});
+    }
+
+    # update result labels
+    my $ok  = $h->{images}{actcheck16};
+    my $nok = $h->{images}{actcross16};
+    my $nul = $h->{images}{empty16};
+    my $r1 = $attack->[0] <= $defence->[0] ? $nok : $ok;
+    my $r2 = scalar(@$defence) == 2
+        ? $attack->[1] <= $defence->[1] ? $nok : $ok
+        : $nul;
+    $h->{labels}{result_1}->configure( -image => $r1 );
+    $h->{labels}{result_2}->configure( -image => $r2 );
+
+}
+
+
+sub _onpub_attack_move {
+    my $h = $_[HEAP];
+    say "move";
+}
+
+
+#
+# event: chnum($country);
+# event: chown($country);
+#
+# Force C<$country> to be redrawn: owner and number of armies.
+#
+sub _onpub_country_redraw {
+    my ($h, $country) = @_[HEAP, ARG0];
+    my $c = $h->{canvas};
+
+    my $id    = $country->id;
+    my $owner = $country->owner;
+    my $fake  = $h->{fake_armies}{$id} // 0;
+
+    # FIXME: change radius to reflect number of armies
+    my ($radius, $fill_color, $text) = defined $owner
+            ? (7, $owner->color, $country->armies + $fake )
+            : (5,       'white', '');
+
+    my $x = $country->x;
+    my $y = $country->y;
+    my $x1 = $x - $radius; my $x2 = $x + $radius;
+    my $y1 = $y - $radius; my $y2 = $y + $radius;
+
+    # update canvas
+    $c->itemconfigure( "$id&&text", -text => $text);
+    $c->delete( "$id&&circle" );
+    $c->createOval(
+        $x1, $y1, $x2, $y2,
+        -fill    => $fill_color,
+        -outline => 'black',
+        -tags    => [ $country->id, 'circle' ],
+    );
+    $c->raise( "$id&&text", "$id&&circle" );
+}
+
+
 
 #
 # event: load_map( $map );
@@ -110,7 +233,7 @@ sub _onpub_load_map {
         );
 
         # update text values & oval
-        K->yield('country_redraw', $country);
+        K->yield('chown', $country);
     }
 
     # load greyscale image
@@ -138,10 +261,10 @@ sub _onpub_place_armies {
 
     # update the gui to reflect the new state.
     my $c = $h->{canvas};
-    $c->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies',  1) );
-    $c->CanvasBind( '<3>', $s->postback('_canvas_click_place_armies', -1) );
-    $c->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies',  1) );
-    $c->CanvasBind( '<5>', $s->postback('_canvas_click_place_armies', -1) );
+    $c->CanvasBind( '<1>', $s->postback('_canvas_place_armies',  1) );
+    $c->CanvasBind( '<3>', $s->postback('_canvas_place_armies', -1) );
+    $c->CanvasBind( '<4>', $s->postback('_canvas_place_armies',  1) );
+    $c->CanvasBind( '<5>', $s->postback('_canvas_place_armies', -1) );
     $h->{labels}{place_armies}->configure(@ENON);
 
     # update status msg
@@ -162,7 +285,7 @@ sub _onpub_place_armies_initial {
     my ($h, $s) = @_[HEAP, SESSION, ARG0];
 
     my $c = $h->{canvas};
-    $c->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies_initial') );
+    $c->CanvasBind( '<1>', $s->postback('_canvas_place_armies_initial') );
 }
 
 
@@ -240,40 +363,6 @@ sub _onpub_player_add {
 # -- private events
 
 #
-# Force C<$country> to be redrawn: owner and number of armies.
-#
-sub _onpriv_country_redraw {
-    my ($h, $country) = @_[HEAP, ARG0];
-    my $c = $h->{canvas};
-
-    my $id    = $country->id;
-    my $owner = $country->owner;
-    my $fake  = $h->{fake_armies}{$id} // 0;
-
-    # FIXME: change radius to reflect number of armies
-    my ($radius, $fill_color, $text) = defined $owner
-            ? (7, $owner->color, $country->armies + $fake )
-            : (5,       'white', '');
-
-    my $x = $country->x;
-    my $y = $country->y;
-    my $x1 = $x - $radius; my $x2 = $x + $radius;
-    my $y1 = $y - $radius; my $y2 = $y + $radius;
-
-    # update canvas
-    $c->itemconfigure( "$id&&text", -text => $text);
-    $c->delete( "$id&&circle" );
-    $c->createOval(
-        $x1, $y1, $x2, $y2,
-        -fill    => $fill_color,
-        -outline => 'black',
-        -tags    => [ $country->id, 'circle' ],
-    );
-    $c->raise( "$id&&text", "$id&&circle" );
-}
-
-
-#
 # Event: _start( \%params )
 #
 # Called when the poe session gets initialized. Receive a reference
@@ -285,12 +374,16 @@ sub _onpriv_start {
     K->alias_set('board');
     my $top = $h->{toplevel} = $args->{toplevel};
 
+    #-- various resources
+
     # load images
     # FIXME: this should be in a sub/method somewhere
     my $path = find_installed(__PACKAGE__);
     my (undef, $dirname, undef) = fileparse($path);
-    $h->{images}{inactive} = $top->Photo(-file=>"$dirname/icons/player-inactive.png");
-    $h->{images}{active}   = $top->Photo(-file=>"$dirname/icons/player-active.png");
+    $h->{images}{empty16}   = $top->Photo(-file=>"$dirname/icons/empty16.png");
+    $h->{images}{active}    = $top->Photo(-file=>"$dirname/icons/player-active.png");
+    $h->{images}{inactive}  = $h->{images}{empty16};
+    $h->{images}{"dice_$_"} = $top->Photo(-file=>"$dirname/icons/dice-$_.png") for 0..6;
 
     # load icons
     # code & artwork taken from Tk::ToolBar
@@ -307,24 +400,13 @@ sub _onpriv_start {
     # ballon
     $h->{balloon} = $top->Balloon;
 
-    # top frame
-    my $ftop = $top->Frame->pack(@TOP, @XFILLX);
 
-    # label to display country pointed by mouse
-    $h->{country}       = undef;
-    $h->{country_label} = '';
-    $ftop->Label(
-        -anchor       => 'e',
-        -textvariable => \$h->{country_label},
-    )->pack(@RIGHT, @XFILLX);
+    #-- main frames
+    my $fleft  = $top->Frame->pack(@LEFT,  @XFILL2);
+    my $fright = $top->Frame->pack(@RIGHT, @FILL2);
 
-    # frame for players
-    my $fpl = $ftop->Frame->pack(@LEFT);
-    $fpl->Label(-text=>'Players: ')->pack(@LEFT);
-    $h->{frames}{players} = $fpl;
-
-    # frame for game state
-    my $fgs = $top->Frame->pack(@TOP, @XFILL2);
+    #-- frame for game state
+    my $fgs = $fleft->Frame->pack(@TOP, @FILLX);
     $fgs->Label(-text=>'Game state: ')->pack(@LEFT);
     my $labp = $fgs->Label(-text=>'place armies', @ENOFF)->pack(@LEFT, @XFILL2);
     my $but_predo = $fgs->Button(
@@ -338,6 +420,11 @@ sub _onpriv_start {
         @ENOFF,
     )->pack(@LEFT);
     my $laba = $fgs->Label(-text=>'attack', @ENOFF)->pack(@LEFT, @XFILL2);
+    my $but_aredo = $fgs->Button(
+        -command => $s->postback('_but_attack_redo'),
+        -image   => $h->{images}{actredo16},
+        @ENOFF,
+    )->pack(@LEFT);
     my $but_adone = $fgs->Button(
         -command => $s->postback('_but_attack_done'),
         -image   => $h->{images}{navforward16},
@@ -349,22 +436,26 @@ sub _onpriv_start {
         -image   => $h->{images}{playstop16},
         @ENOFF,
     )->pack(@LEFT);
-    #$fgs->Button(-text=>'attack')->pack(@LEFT, @XFILL2);
-    #$fgs->Button(-text=>'move armies')->pack(@LEFT, @XFILL2);
     $h->{labels}{place_armies} = $labp;
     $h->{labels}{attack}       = $laba;
     $h->{labels}{move_armies}  = $labm;
     $h->{buttons}{place_armies_redo} = $but_predo;
     $h->{buttons}{place_armies_done} = $but_pdone;
+    $h->{buttons}{attack_redo}       = $but_aredo;
+    $h->{buttons}{attack_done}       = $but_adone;
+    $h->{buttons}{move_armies_done}  = $but_mdone;
     $h->{balloon}->attach($but_predo, -msg=>'undo all');
     $h->{balloon}->attach($but_pdone, -msg=>'ready for attack');
+    $h->{balloon}->attach($but_aredo, -msg=>'attack again');
     $h->{balloon}->attach($but_adone, -msg=>'consolidate');
     $h->{balloon}->attach($but_mdone, -msg=>'turn finished');
 
-    # create canvas, removing class bindings
-    my $c = $top->Canvas->pack;
+
+    #-- canvas
+    my $c = $fleft->Canvas->pack(@TOP);
     $h->{canvas} = $c;
     $c->CanvasBind( '<Motion>', [$s->postback('_canvas_motion'), Ev('x'), Ev('y')] );
+    # removing class bindings
     foreach my $button ( qw{ 4 5 6 7 } ) {
         $top->bind('Tk::Canvas', "<Button-$button>",       undef);
         $top->bind('Tk::Canvas', "<Shift-Button-$button>", undef);
@@ -374,19 +465,104 @@ sub _onpriv_start {
         $top->bind('Tk::Canvas', "<Control-Key-$key>", undef);
     }
 
-    # status bar
+    #-- bottom frame
+    # the status bar
     $h->{status} = '';
-    my $sb = $top->Frame->pack(@BOTTOM, @FILLX);
-    $sb->Label(
+    my $fbot = $fleft->Frame->pack(@BOTTOM, @FILLX);
+    $fbot->Label(
         -anchor       =>'w',
         -textvariable => \$h->{status},
-    )->pack(@RIGHT,@XFILLX, @PAD1);
+    )->pack(@LEFT,@XFILLX, @PAD1);
 
-    # say that we're done
+    # label to display country pointed by mouse
+    $h->{country}       = undef;
+    $h->{country_label} = '';
+    $fbot->Label(
+        -anchor       => 'e',
+        -textvariable => \$h->{country_label},
+    )->pack(@RIGHT, @XFILLX, @PAD1);
+
+
+     #-- players frame
+    my $fpl = $fright->Frame->pack(@TOP);
+    $fpl->Label(-text=>'Players')->pack(@TOP);
+    my $fplist = $fpl->Frame->pack(@TOP);
+    $h->{frames}{players} = $fplist;
+
+    #-- dices frame
+    my $fdice = $fright->Frame->pack(@TOP,@FILLX, -pady=>10);
+    $fdice->Label(-text=>'Dice arena')->pack(@TOP,@FILLX);
+    my $fd1 = $fdice->Frame->pack(@TOP,@FILL2);
+    my $a1 = $fd1->Label(-image=>$h->{images}{dice_0})->pack(@LEFT);
+    my $a2 = $fd1->Label(-image=>$h->{images}{dice_0})->pack(@LEFT);
+    my $a3 = $fd1->Label(-image=>$h->{images}{dice_0})->pack(@LEFT);
+    my $fd3 = $fdice->Frame->pack(@TOP,@FILL2);
+    my $r1 = $fd3->Label(
+        -image => $h->{images}{empty16},
+        -width => 38,
+    )->pack(@LEFT);
+    my $r2 = $fd3->Label(
+        -image => $h->{images}{empty16},
+        -width => 38,
+    )->pack(@LEFT);
+    my $fd2 = $fdice->Frame->pack(@TOP,@FILL2);
+    my $d1 = $fd2->Label(-image=>$h->{images}{dice_0})->pack(@LEFT);
+    my $d2 = $fd2->Label(-image=>$h->{images}{dice_0})->pack(@LEFT);
+    $h->{labels}{attack_1}  = $a1;
+    $h->{labels}{attack_2}  = $a2;
+    $h->{labels}{attack_3}  = $a3;
+    $h->{labels}{result_1}  = $r1;
+    $h->{labels}{result_2}  = $r2;
+    $h->{labels}{defence_1} = $d1;
+    $h->{labels}{defence_2} = $d2;
+
+
+    #-- say that we're done
     K->post('risk', 'window_created', 'board');
 }
 
 # -- gui events
+
+#
+# event: _but_attack_done();
+#
+# Called when all planned attacks are finished.
+#
+sub _ongui_but_attack_done {
+    my $h = $_[HEAP];
+
+    # reset src & dst
+    $h->{src} = undef;
+    $h->{dst} = undef;
+
+    # update gui
+    $h->{status} = '';
+    my $c = $h->{canvas};
+    $h->{toplevel}->bind('<Key-space>', undef);  # can't re-attack
+    $h->{toplevel}->bind('<Key-Return>', undef); # done attack
+    $c->CanvasBind('<1>', undef);
+    $c->CanvasBind('<3>', undef);
+    $h->{labels}{attack}->configure(@ENOFF);
+    $h->{buttons}{attack_redo}->configure(@ENOFF);
+    $h->{buttons}{attack_done}->configure(@ENOFF);
+
+    # signal controller
+    K->post('risk', 'attack_end');
+}
+
+
+#
+# event: _but_attack_redo();
+#
+# attack again the same destination from the same source.
+#
+sub _ongui_but_attack_redo {
+    my $h = $_[HEAP];
+
+    # signal controller
+    K->post('risk', 'attack', $h->{src}, $h->{dst});
+}
+
 
 #
 # event: _but_place_armies_done();
@@ -414,6 +590,8 @@ sub _ongui_but_place_armies_done {
     $h->{labels}{place_armies}->configure(@ENOFF);
     $h->{buttons}{place_armies_redo}->configure(@ENOFF);
     $h->{buttons}{place_armies_done}->configure(@ENOFF);
+    $h->{toplevel}->bind('<Key-Escape>', undef); # redo armies placement
+    $h->{toplevel}->bind('<Key-Return>', undef); # done armies placement
 
     # request controller to update
     foreach my $id ( keys %{ $h->{fake_armies} } ) {
@@ -445,8 +623,8 @@ sub _ongui_but_place_armies_redo {
     # forbid button next phase to be clicked
     $h->{buttons}{place_armies_done}->configure(@ENOFF);
     # allow adding armies
-    $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies', 1) );
-    $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies', 1) );
+    $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_place_armies', 1) );
+    $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_place_armies', 1) );
 
     # reset initials
     my $nb = 0;
@@ -459,6 +637,84 @@ sub _ongui_but_place_armies_redo {
 
     # updatee status
     $h->{status} = "$nb armies left to place";
+}
+
+
+#
+# event: _canvas_attack_from();
+#
+# Called when user wants to select a country to attack from.
+#
+sub _ongui_canvas_attack_from {
+    my ($h, $s) = @_[HEAP, SESSION];
+
+    my $curplayer = $h->{curplayer};
+    my $country   = $h->{country};
+
+    # checks...
+    return unless defined $country;
+    return if $country->owner->name ne $curplayer->name; # country owner
+    return if $country->armies == 1;
+
+    # record attack source
+    $h->{src} = $country;
+
+    # update status msg
+    $h->{status} = 'Attacking ... from ' . $country->name;
+
+    $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_attack_target') );
+}
+
+
+#
+# event: _canvas_attack_cancel();
+#
+# Called when user wants to deselect a country to attack.
+#
+sub _ongui_canvas_attack_cancel {
+    my $h = $_[HEAP];
+
+    # cancel attack source
+    $h->{src} = undef;
+
+    # update status msg
+    $h->{status} = 'Attacking from ...';
+}
+
+#
+# event: _canvas_attack_target();
+#
+# Called when user wants to select target for her attack.
+#
+sub _ongui_canvas_attack_target {
+   my $h = $_[HEAP];
+
+    my $curplayer = $h->{curplayer};
+    my $country   = $h->{country};
+
+    # checks...
+    return unless defined $country;
+    if ( $country->owner->name eq $curplayer->name ) {
+        # we own this country too, let's just change source of attack.
+        K->yield('_canvas_attack_from');
+        return;
+    }
+    return unless $country->is_neighbour( $h->{src}->id );
+
+    # update status msg
+    $h->{status} = 'Attacking ' . $country->name . ' from ' . $h->{src}->name;
+
+    # store opponent
+    $h->{dst} = $country;
+
+    # update gui to reflect new state
+    $h->{canvas}->CanvasBind('<1>', undef);
+    $h->{canvas}->CanvasBind('<3>', undef);
+    $h->{buttons}{attack_done}->configure(@ENOFF);
+    $h->{toplevel}->bind('<Key-Return>', undef);
+
+    # signal controller
+    K->post('risk', 'attack', $h->{src}, $country);
 }
 
 
@@ -488,13 +744,13 @@ sub _ongui_canvas_motion {
 
 
 #
-# event: _canvas_click_place_armies( [ $diff ] );
+# event: _canvas_place_armies( [ $diff ] );
 #
 # Called when mouse click on the canvas during armies placement.
 # Update "fake armies" to place $diff (may be negative) army on the
 # current country.
 #
-sub _ongui_canvas_click_place_armies {
+sub _ongui_canvas_place_armies {
     my ($h, $s, $args) = @_[HEAP, SESSION, ARG0];
 
     my $curplayer = $h->{curplayer};
@@ -523,6 +779,7 @@ sub _ongui_canvas_click_place_armies {
 
     # allow redo button
     $h->{buttons}{place_armies_redo}->configure(@ENON);
+    $h->{toplevel}->bind('<Key-Escape>', $s->postback('_but_place_armies_redo'));
 
     # check if we're done
     my $nb = 0;
@@ -531,6 +788,7 @@ sub _ongui_canvas_click_place_armies {
     if ( $nb == 0 ) {
         # allow button next phase to be clicked
         $h->{buttons}{place_armies_done}->configure(@ENON);
+        $h->{toplevel}->bind('<Key-Return>', $s->postback('_but_place_armies_done'));
         # forbid adding armies
         $h->{canvas}->CanvasBind('<1>', undef);
         $h->{canvas}->CanvasBind('<4>', undef);
@@ -539,19 +797,19 @@ sub _ongui_canvas_click_place_armies {
         # forbid button next phase to be clicked
         $h->{buttons}{place_armies_done}->configure(@ENOFF);
         # allow adding armies
-        $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_click_place_armies', 1) );
-        $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_click_place_armies', 1) );
+        $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_place_armies', 1) );
+        $h->{canvas}->CanvasBind( '<4>', $s->postback('_canvas_place_armies', 1) );
     }
 }
 
 
 #
-# event: _canvas_click_place_armies_initial();
+# event: _canvas_place_armies_initial();
 #
 # Called when mouse click on the canvas during initial armies placement.
 # Will request controller to place one army on the current country.
 #
-sub _ongui_canvas_click_place_armies_initial {
+sub _ongui_canvas_place_armies_initial {
     my $h = $_[HEAP];
 
     my $curplayer = $h->{curplayer};
