@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use File::Basename qw{ fileparse };
+use Games::Risk::GUI::Invasion;
 use Image::Size;
 use Module::Util   qw{ find_installed };
 use POE;
@@ -73,7 +74,6 @@ sub spawn {
             # public events
             attack                     => \&_onpub_attack,
             attack_info                => \&_onpub_attack_info,
-            attack_move                => \&_onpub_attack_move,
             chnum                      => \&_onpub_country_redraw,
             chown                      => \&_onpub_country_redraw,
             load_map             => \&_onpub_load_map,
@@ -109,7 +109,9 @@ sub _onpub_attack {
     $h->{buttons}{attack_done}->configure(@ENON);
     $h->{toplevel}->bind('<Key-Return>', $s->postback('_but_attack_done'));
 
-    if ( defined($h->{src}) && defined($h->{dst}) && $h->{src}->armies>1 ) {
+    if ( defined($h->{src}) && defined($h->{dst})
+        && $h->{src}->owner ne $h->{dst}->owner
+        && $h->{src}->armies > 1 ) {
         $h->{buttons}{attack_redo}->configure(@ENON);
         $h->{toplevel}->bind('<Key-space>', $s->postback('_but_attack_redo'));
     } else {
@@ -126,6 +128,7 @@ sub _onpub_attack {
 # event: attack_info($src, $dst, \@attack, \@defence);
 #
 # Give the result of $dst attack from $src: @attack and @defence dices
+#
 sub _onpub_attack_info {
     my ($h, $src, $dst, $attack, $defence, $loss_src, $loss_dst) = @_[HEAP, ARG0..$#_];
 
@@ -155,12 +158,6 @@ sub _onpub_attack_info {
     $h->{labels}{result_1}->configure( -image => $r1 );
     $h->{labels}{result_2}->configure( -image => $r2 );
 
-}
-
-
-sub _onpub_attack_move {
-    my $h = $_[HEAP];
-    say "move";
 }
 
 
@@ -516,6 +513,9 @@ sub _onpriv_start {
     $h->{labels}{defence_1} = $d1;
     $h->{labels}{defence_2} = $d2;
 
+
+    #-- other window
+    Games::Risk::GUI::Invasion->spawn({parent=>$top});
 
     #-- say that we're done
     K->post('risk', 'window_created', 'board');

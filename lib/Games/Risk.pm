@@ -25,7 +25,7 @@ use aliased 'POE::Kernel' => 'K';
 
 
 # Public variables of the module.
-our $VERSION = '0.3.1';
+our $VERSION = '0.3.2';
 
 Readonly my $ATTACK_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $TURN_WAIT => 0.300; # FIXME: hardcoded
@@ -76,6 +76,7 @@ sub spawn {
             initial_armies_placed       => \&_onpub_initial_armies_placed,
             armies_placed       => \&_onpub_armies_placed,
             attack                  => \&_onpub_attack,
+            attack_move             => \&_onpub_attack_move,
             attack_end              => \&_onpub_attack_end,
         },
     );
@@ -131,6 +132,8 @@ sub _onpub_attack {
 
     my $armies_src = $src->armies - 1; # 1 army to hold $src
     my $armies_dst = $dst->armies;
+    $h->src($src);
+    $h->dst($dst);
 
 
     # roll the dices for the attacker
@@ -174,6 +177,39 @@ sub _onpub_attack {
 #
 sub _onpub_attack_end {
     K->delay_set( '_attack_end' => $WAIT );
+}
+
+
+#
+# event: attack_move($src, $dst, $nb)
+#
+# request to invade $dst from $src with $nb armies.
+#
+sub _onpub_attack_move {
+    my ($h, $src, $dst, $nb) = @_[HEAP, ARG0..$#_];
+
+    # FIXME: check player is curplayer
+    # FIXME: check $src & $dst
+    # FIXME: check $nb is more than min
+    # FIXME: check $nb is less than max - 1
+
+    # update the countries
+    $src->armies( $src->armies - $nb );
+    $dst->armies( $nb );
+    $dst->chown( $src->owner );
+
+    # update the gui
+    K->post('board', 'chnum', $src); # FIXME: broadcast
+    K->post('board', 'chown', $dst); # FIXME: broadcast
+
+    # continue attack
+    my $session;
+    my $player = $h->curplayer;
+    given ($player->type) {
+        when ('ai')    { $session = $player->name; }
+        when ('human') { $session = 'board'; } #FIXME: broadcast
+    }
+    K->post($session, 'attack');
 }
 
 
@@ -316,9 +352,10 @@ sub _onpriv_attack_done {
         my $session;
         given ($player->type) {
             when ('ai')    { $session = $player->name; }
-            when ('human') { $session = 'board'; } #FIXME: broadcast
+            when ('human') { $session = 'invasion'; } #FIXME: broadcast
         }
         K->post($session, 'attack_move', $src, $dst, $h->nbdice);
+
     } else {
         K->post($session, 'attack');
     }
@@ -566,6 +603,8 @@ in the future for C<Games::Risk>:
 
 =item * screen to customize the new game to be played
 
+=item * config save / restore
+
 =item * saving / loading game
 
 =item * network play
@@ -578,13 +617,17 @@ in the future for C<Games::Risk>:
 
 =item * country cards
 
-=item * continents bonus
+=item * continents bonus, maybe localized?
+
+=item * statistics
 
 =item * prettier map coloring
 
 =item * missions
 
-=item * others to be defined...
+=item * remove all the FIXMEs in the code :-)
+
+=item * other...
 
 =back
 
