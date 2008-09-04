@@ -25,7 +25,7 @@ use aliased 'POE::Kernel' => 'K';
 
 
 # Public variables of the module.
-our $VERSION = '0.3.2';
+our $VERSION = '0.3.3';
 
 Readonly my $ATTACK_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $TURN_WAIT => 0.300; # FIXME: hardcoded
@@ -156,7 +156,8 @@ sub _onpub_attack {
     # compute losses
     my @losses  = (0, 0);
     $losses[ $attack[0] <= $defence[0] ? 0 : 1 ]++;
-    $losses[ $attack[1] <= $defence[1] ? 0 : 1 ]++ if $nbdice_dst == 2;
+    $losses[ $attack[1] <= $defence[1] ? 0 : 1 ]++
+        if $nbdice_src >= 2 && $nbdice_dst == 2;
 
     # update countries
     $src->armies( $src->armies - $losses[0] );
@@ -349,12 +350,19 @@ sub _onpriv_attack_done {
     # check outcome
     if ( $dst->armies <= 0 ) {
         # all your base are belong to us! :-)
-        my $session;
-        given ($player->type) {
-            when ('ai')    { $session = $player->name; }
-            when ('human') { $session = 'invasion'; } #FIXME: broadcast
+        if ( $src->armies - 1 == $h->nbdice ) {
+            # erm, no choice but move all remaining armies
+            K->yield( 'attack_move', $src, $dst, $h->nbdice );
+
+        } else {
+            # ask how many armies to move
+            my $session;
+            given ($player->type) {
+                when ('ai')    { $session = $player->name; }
+                when ('human') { $session = 'invasion'; } #FIXME: broadcast
+            }
+            K->post($session, 'attack_move', $src, $dst, $h->nbdice);
         }
-        K->post($session, 'attack_move', $src, $dst, $h->nbdice);
 
     } else {
         K->post($session, 'attack');
@@ -417,16 +425,26 @@ sub _onpriv_place_armies {
     my @countries = $player->countries;
     my $nb = int( scalar(@countries) / 3 );
     $nb = 3 if $nb < 3;
-    $h->armies($nb);
 
-    # FIXME: continent bonus
-
+    # signal player
     my $session;
     given ($player->type) {
         when ('ai')    { $session = $player->name; }
         when ('human') { $session = 'board'; } #FIXME: broadcast
     }
     K->post($session, 'place_armies', $nb);
+
+    # continent bonus
+    my $bonus = 0;
+    foreach my $c( $h->map->continents ) {
+        next unless $c->is_owned($player);
+
+        my $bonus = $c->bonus;
+        $nb += $bonus;
+        K->post($session, 'place_armies', $bonus, $c); # FIXME: broadcast
+    }
+
+    $h->armies($nb);
 }
 
 
