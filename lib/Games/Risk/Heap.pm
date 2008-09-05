@@ -20,7 +20,7 @@ use aliased 'POE::Kernel' => 'K';
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{
     armies curplayer dst map move_in move_out nbdice src wait_for
-    _players _players_turn_done _players_turn_todo
+    _players _players_active _players_turn_done _players_turn_todo
 } );
 
 #--
@@ -29,23 +29,31 @@ __PACKAGE__->mk_accessors( qw{
 # -- public methods
 
 #
-# my @players = $heap->players;
+# $heap->player_lost( $player );
 #
-# Return the list of current players (Games::Risk::Player objects).
-# Note that some of those players may have already lost.
+# Remove a player from the list of active players.
 #
-sub players {
-    my ($self) = @_;
-    return @{ $self->_players };
+sub player_lost {
+    my ($self, $player) = @_;
+
+    # remove from current turn
+    my @done = grep { $_ ne $player } @{ $self->_players_turn_done };
+    my @todo = grep { $_ ne $player } @{ $self->_players_turn_todo };
+    $self->_players_turn_done( \@done );
+    $self->_players_turn_todo( \@todo );
+
+    # remove from active list
+    my @active = grep { $_ ne $player } @{ $self->_players_active };
+    $self->_players_active( \@active );
 }
 
 
 #
-# my $player = $heap->players_next;
+# my $player = $heap->player_next;
 #
 # Return the next player to play, or undef if the turn is over.
 #
-sub players_next {
+sub player_next {
     my ($self) = @_;
 
     my @done = @{ $self->_players_turn_done };
@@ -69,6 +77,18 @@ sub players_next {
 
 
 #
+# my @players = $heap->players;
+#
+# Return the list of current players (Games::Risk::Player objects).
+# Note that some of those players may have already lost.
+#
+sub players {
+    my ($self) = @_;
+    return @{ $self->_players };
+}
+
+
+#
 # $heap->players_reset;
 #
 # Mark all players to be in "turn to do". Typically called during
@@ -76,7 +96,8 @@ sub players_next {
 #
 sub players_reset {
     my ($self) = @_;
-    my @players = $self->players;
+
+    my @players = @{ $self->_players_active };
     $self->_players_turn_done([]);
     $self->_players_turn_todo( \@players );
 }
@@ -161,7 +182,12 @@ Return the C<Games::Risk::Player> objects of the current game. Note that
 some of those players may have already lost.
 
 
-=item * my $player = $heap->players_next()
+=item * $heap->player_lost( $player )
+
+Remove $player from the list of active players.
+
+
+=item * my $player = $heap->player_next()
 
 Return the next player to play, or undef if the turn is over. Of course,
 players that have lost will never be returned.

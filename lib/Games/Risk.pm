@@ -25,7 +25,7 @@ use aliased 'POE::Kernel' => 'K';
 
 
 # Public variables of the module.
-our $VERSION = '0.4.0';
+our $VERSION = '0.4.1';
 
 Readonly my $ATTACK_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $TURN_WAIT => 0.300; # FIXME: hardcoded
@@ -209,6 +209,14 @@ sub _onpub_attack_move {
     # FIXME: check $src & $dst
     # FIXME: check $nb is more than min
     # FIXME: check $nb is less than max - 1
+
+    # check if previous $dst owner has lost.
+    my $looser = $dst->owner;
+    if ( scalar($looser->countries) == 1 ) {
+        # omg! one player left
+        $h->player_lost($looser);
+        K->post('board', 'player_lost', $looser); # FIXME: broadcast
+    }
 
     # update the countries
     $src->armies( $src->armies - $nb );
@@ -437,6 +445,7 @@ sub _onpriv_create_players {
     }
 
     $h->_players(\@players); # FIXME: private
+    $h->_players_active(\@players); # FIXME: private
 }
 
 
@@ -535,13 +544,13 @@ sub _onpriv_place_armies_initial {
     }
 
     # get next player that should place an army
-    my $player = $h->players_next;
+    my $player = $h->player_next;
 
     if ( not defined $player ) {
         # all players have placed an army once. so let's just decrease
         # count of armies to be placed, and start again.
 
-        $player = $h->players_next;
+        $player = $h->player_next;
         $left--;
         $h->armies( $left );
 
@@ -573,7 +582,7 @@ sub _onpriv_player_next {
     my $h = $_[HEAP];
 
     # get next player
-    my $player = $h->players_next;
+    my $player = $h->player_next;
     $h->curplayer( $player );
     if ( not defined $player ) {
         K->yield('_begin_turn');
