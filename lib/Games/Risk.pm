@@ -25,7 +25,7 @@ use aliased 'POE::Kernel' => 'K';
 
 
 # Public variables of the module.
-our $VERSION = '0.3.3';
+our $VERSION = '0.4.0';
 
 Readonly my $ATTACK_WAIT => 0.300; # FIXME: hardcoded
 Readonly my $TURN_WAIT => 0.300; # FIXME: hardcoded
@@ -68,16 +68,19 @@ sub spawn {
             _player_begun           => \&_onpriv_place_armies,
             _armies_placed          => \&_onpriv_attack,
             _attack_done            => \&_onpriv_attack_done,
-            _attack_end             => \&_onpriv_player_next,
+            _attack_end             => \&_onpriv_move_armies,
+            _armies_moved           => \&_onpriv_player_next,
             # public events
             window_created      => \&_onpub_window_created,
             map_loaded          => \&_onpub_map_loaded,
             player_created      => \&_onpub_player_created,
             initial_armies_placed       => \&_onpub_initial_armies_placed,
+            armies_moved                => \&_onpub_armies_moved,
             armies_placed       => \&_onpub_armies_placed,
             attack                  => \&_onpub_attack,
             attack_move             => \&_onpub_attack_move,
             attack_end              => \&_onpub_attack_end,
+            move_armies                 => \&_onpub_move_armies,
         },
     );
     return $session->ID;
@@ -88,6 +91,19 @@ sub spawn {
 # EVENTS HANDLERS
 
 # -- public events
+
+#
+# event: armies_moved();
+#
+# fired when player has finished moved armies at the end of the turn.
+#
+sub _onpub_armies_moved {
+    my $h = $_[HEAP];
+
+    # FIXME: check player is curplayer
+    K->delay_set( '_armies_moved' => $WAIT );
+}
+
 
 #
 # event: armies_placed($country, $nb);
@@ -245,6 +261,33 @@ sub _onpub_map_loaded {
 
 
 #
+# event: move_armies( $src, $dst, $nb )
+#
+# fired when player wants to move $nb armies from $src to $dst.
+#
+sub _onpub_move_armies {
+    my ($h, $src, $dst, $nb) = @_[HEAP, ARG0..$#_];
+
+    # FIXME: check player is curplayer
+    # FIXME: check $src & $dst belong to curplayer
+    # FIXME: check $src & $dst are adjacent
+    # FIXME: check $src keeps one army
+    # FIXME: check if army has not yet moved
+    # FIXME: check negative values
+    # FIXME: check max values
+
+    $h->move_out->{ $src->id } += $nb;
+    $h->move_in->{  $dst->id } += $nb;
+
+    $src->armies( $src->armies - $nb );
+    $dst->armies( $dst->armies + $nb );
+
+    K->post('board', 'chnum', $src); # FIXME: broadcast
+    K->post('board', 'chnum', $dst); # FIXME: broadcast
+}
+
+
+#
 # event: player_created($player);
 #
 # fired when a player is ready. used as a checkpoint to be sure everyone
@@ -359,7 +402,7 @@ sub _onpriv_attack_done {
             my $session;
             given ($player->type) {
                 when ('ai')    { $session = $player->name; }
-                when ('human') { $session = 'invasion'; } #FIXME: broadcast
+                when ('human') { $session = 'move-armies'; } #FIXME: broadcast
             }
             K->post($session, 'attack_move', $src, $dst, $h->nbdice);
         }
@@ -411,6 +454,27 @@ sub _onpriv_load_map {
     my $map = Games::Risk::Map->new;
     $map->load_file($path);
     $h->map($map);
+}
+
+
+#
+# request current player to move armies
+#
+sub _onpriv_move_armies {
+    my $h = $_[HEAP];
+
+    # reset counters
+    $h->move_in( {} );
+    $h->move_out( {} );
+
+    # add current player to move
+    my $player = $h->curplayer;
+    my $session;
+    given ($player->type) {
+        when ('ai')    { $session = $player->name; }
+        when ('human') { $session = 'board'; } #FIXME: broadcast
+    }
+    K->post($session, 'move_armies');
 }
 
 

@@ -14,7 +14,7 @@ use strict;
 use warnings;
 
 use File::Basename qw{ fileparse };
-use Games::Risk::GUI::Invasion;
+use Games::Risk::GUI::MoveArmies;
 use Image::Size;
 use Module::Util   qw{ find_installed };
 use POE;
@@ -63,11 +63,15 @@ sub spawn {
             # gui events
             _but_attack_done               => \&_ongui_but_attack_done,
             _but_attack_redo               => \&_ongui_but_attack_redo,
+            _but_move_armies_done          => \&_ongui_but_move_armies_done,
             _but_place_armies_done               => \&_ongui_but_place_armies_done,
             _but_place_armies_redo               => \&_ongui_but_place_armies_redo,
             _canvas_attack_cancel          => \&_ongui_canvas_attack_cancel,
             _canvas_attack_from            => \&_ongui_canvas_attack_from,
             _canvas_attack_target          => \&_ongui_canvas_attack_target,
+            _canvas_move_armies_cancel     => \&_ongui_canvas_move_armies_cancel,
+            _canvas_move_armies_from       => \&_ongui_canvas_move_armies_from,
+            _canvas_move_armies_target     => \&_ongui_canvas_move_armies_target,
             _canvas_place_armies           => \&_ongui_canvas_place_armies,
             _canvas_place_armies_initial   => \&_ongui_canvas_place_armies_initial,
             _canvas_motion       => \&_ongui_canvas_motion,
@@ -77,6 +81,8 @@ sub spawn {
             chnum                      => \&_onpub_country_redraw,
             chown                      => \&_onpub_country_redraw,
             load_map             => \&_onpub_load_map,
+            move_armies                   => \&_onpub_move_armies,
+            move_armies_move              => \&_onpub_move_armies_move,
             place_armies               => \&_onpub_place_armies,
             place_armies_initial       => \&_onpub_place_armies_initial,
             place_armies_initial_count => \&_onpub_place_armies_initial_count,
@@ -173,11 +179,12 @@ sub _onpub_country_redraw {
 
     my $id    = $country->id;
     my $owner = $country->owner;
-    my $fake  = $h->{fake_armies}{$id} // 0;
+    my $fakein  = $h->{fake_armies_in}{$id}  // 0;
+    my $fakeout = $h->{fake_armies_out}{$id} // 0;
 
     # FIXME: change radius to reflect number of armies
     my ($radius, $fill_color, $text) = defined $owner
-            ? (7, $owner->color, $country->armies + $fake )
+            ? (7, $owner->color, $country->armies + $fakein - $fakeout )
             : (5,       'white', '');
 
     my $x = $country->x;
@@ -240,6 +247,60 @@ sub _onpub_load_map {
     # store map and say we're done
     $h->{map} = $map;
     K->post('risk', 'map_loaded');
+}
+
+
+#
+# event: move_armies()
+#
+# request user to move armies if he wants to.
+#
+sub _onpub_move_armies {
+    my ($h, $s) = @_[HEAP, SESSION];
+
+    # initialiaze moves
+    $h->{move_armies} = [];
+    $h->{fake_armies_in}  = {};
+    $h->{fake_armies_out} = {};
+
+   # update the gui to reflect the new state.
+    my $c = $h->{canvas};
+    $c->CanvasBind( '<1>', $s->postback('_canvas_move_armies_from') );
+    $c->CanvasBind( '<3>', $s->postback('_canvas_move_armies_cancel') );
+    $h->{labels}{move_armies}->configure(@ENON);
+    $h->{buttons}{move_armies_done}->configure(@ENON);
+    $h->{status} = 'Moving armies from...';
+    $h->{toplevel}->bind('<Key-Return>', $s->postback('_but_move_armies_done'));
+}
+
+
+#
+# event: move_armies_move($src, $dst, $nb);
+#
+# request user to move $nb armies from $src to $dst.
+#
+sub _onpub_move_armies_move {
+    my ($h, $s, $src, $dst, $nb) = @_[HEAP, SESSION, ARG0..$#_];
+
+    my $srcid = $src->id;
+    my $dstid = $dst->id;
+
+    # update the countries
+    $h->{fake_armies_out}{$srcid} += $nb;
+    $h->{fake_armies_in}{$dstid}  += $nb;
+
+    # save move for later
+    push @{ $h->{move_armies} }, [$src, $dst, $nb];
+
+    # update the gui
+    K->yield('chnum', $src);
+    K->yield('chnum', $dst);
+    my $c = $h->{canvas};
+    $c->CanvasBind( '<1>', $s->postback('_canvas_move_armies_from') );
+    $c->CanvasBind( '<3>', $s->postback('_canvas_move_armies_cancel') );
+    $h->{buttons}{move_armies_done}->configure(@ENON);
+    $h->{toplevel}->bind('<Key-Return>', $s->postback('_but_move_armies_done'));
+    $h->{status} = 'Moving armies from...';
 }
 
 
@@ -515,7 +576,7 @@ sub _onpriv_start {
 
 
     #-- other window
-    Games::Risk::GUI::Invasion->spawn({parent=>$top});
+    Games::Risk::GUI::MoveArmies->spawn({parent=>$top});
 
     #-- say that we're done
     K->post('risk', 'window_created', 'board');
@@ -566,6 +627,37 @@ sub _ongui_but_attack_redo {
 
 
 #
+# event: _but_move_armies_done()
+#
+# moving armies at the end of the turn is finished.
+#
+sub _ongui_but_move_armies_done {
+    my $h = $_[HEAP];
+
+    # update gui
+    my $c = $h->{canvas};
+    $h->{toplevel}->bind('<Key-Return>', undef);
+    $c->CanvasBind( '<1>', undef );
+    $c->CanvasBind( '<3>', undef );
+    $h->{labels}{move_armies}->configure(@ENOFF);
+    $h->{buttons}{move_armies_done}->configure(@ENOFF);
+    $h->{status} = '';
+
+    # signal controller
+    foreach my $move ( @{ $h->{move_armies} } ) {
+        my ($src, $dst, $nb) = @$move;
+        K->post('risk', 'move_armies', $src, $dst, $nb);
+    }
+    K->post('risk', 'armies_moved');
+
+    # reset internals
+    $h->{move_armies} = [];
+    $h->{fake_armies_in}  = {};
+    $h->{fake_armies_out} = {};
+}
+
+
+#
 # event: _but_place_armies_done();
 #
 # Called when all armies are placed correctly.
@@ -595,14 +687,14 @@ sub _ongui_but_place_armies_done {
     $h->{toplevel}->bind('<Key-Return>', undef); # done armies placement
 
     # request controller to update
-    foreach my $id ( keys %{ $h->{fake_armies} } ) {
-        next if $h->{fake_armies}{$id} == 0; # don't send null reinforcements
+    foreach my $id ( keys %{ $h->{fake_armies_in} } ) {
+        next if $h->{fake_armies_in}{$id} == 0; # don't send null reinforcements
         my $country = $h->{map}->country_get($id);
-        K->post('risk', 'armies_placed', $country, $h->{fake_armies}{$id});
+        K->post('risk', 'armies_placed', $country, $h->{fake_armies_in}{$id});
     }
     $h->{armies} = {};
     $h->{armies_backup} = {};
-    $h->{fake_armies} = {};
+    $h->{fake_armies_in} = {};
 }
 
 
@@ -614,9 +706,9 @@ sub _ongui_but_place_armies_done {
 sub _ongui_but_place_armies_redo {
     my ($h, $s) = @_[HEAP, SESSION];
 
-    foreach my $id ( keys %{ $h->{fake_armies} } ) {
-        next if $h->{fake_armies}{$id} == 0;
-        delete $h->{fake_armies}{$id};
+    foreach my $id ( keys %{ $h->{fake_armies_in} } ) {
+        next if $h->{fake_armies_in}{$id} == 0;
+        delete $h->{fake_armies_in}{$id};
         my $country = $h->{map}->country_get($id);
         K->yield('chnum', $country);
     }
@@ -634,7 +726,7 @@ sub _ongui_but_place_armies_redo {
         $h->{armies}{$k} = $v; # restore initial value
         $nb += $v;
     }
-    $h->{fake_armies} = {};
+    $h->{fake_armies_in} = {};
 
     # updatee status
     $h->{status} = "$nb armies left to place";
@@ -681,6 +773,7 @@ sub _ongui_canvas_attack_cancel {
     # update status msg
     $h->{status} = 'Attacking from ...';
 }
+
 
 #
 # event: _canvas_attack_target();
@@ -745,6 +838,84 @@ sub _ongui_canvas_motion {
 
 
 #
+# event: _canvas_move_armies_cancel();
+#
+# Called when user wants to deselect a country to move from.
+#
+sub _ongui_canvas_move_armies_cancel {
+    my $h = $_[HEAP];
+
+    # cancel attack source
+    $h->{src} = undef;
+
+    # update status msg
+    $h->{status} = 'Moving armies from ...';
+}
+
+
+#
+# event: _canvas_move_armies_from();
+#
+# Called when user selects country to move armies from.
+#
+sub _ongui_canvas_move_armies_from {
+    my ($h, $s) = @_[HEAP, SESSION];
+
+    my $curplayer = $h->{curplayer};
+    my $country   = $h->{country};
+
+    # checks...
+    return unless defined $country;
+    my $id = $country->id;
+    return if $country->owner->name ne $curplayer->name; # country owner
+    return if $country->armies - ($h->{fake_armies_out}{$id}//0) == 1;
+
+    # record move source
+    $h->{src} = $country;
+
+    # update status msg
+    $h->{status} = 'Moving armies from ' . $country->name . ' to ...';
+
+    $h->{canvas}->CanvasBind( '<1>', $s->postback('_canvas_move_armies_target') );
+}
+
+
+#
+# event: _canvas_move_armies_target();
+#
+# Called when user wants to select target for her armies move.
+#
+sub _ongui_canvas_move_armies_target {
+   my $h = $_[HEAP];
+
+    my $curplayer = $h->{curplayer};
+    my $country   = $h->{country};
+
+    # checks...
+    return unless defined $country;
+    return if $country->owner->name ne $curplayer->name;
+    return unless $country->is_neighbour( $h->{src}->id );
+
+    # update status msg
+    $h->{status} = 'Moving armies from ' . $h->{src}->name . ' to ' .  $country->name;
+
+    # store opponent
+    $h->{dst} = $country;
+
+    # update gui to reflect new state
+    $h->{canvas}->CanvasBind('<1>', undef);
+    $h->{canvas}->CanvasBind('<3>', undef);
+    $h->{buttons}{move_armies_done}->configure(@ENOFF);
+    $h->{toplevel}->bind('<Key-Return>', undef);
+
+    # request user how many armies to move
+    my $src = $h->{src};
+    my $max = $src->armies - 1 - ($h->{fake_armies_out}{ $src->id }//0);
+    K->post('move-armies', 'move_armies', $h->{src}, $country, $max);
+}
+
+
+#
 # event: _canvas_place_armies( [ $diff ] );
 #
 # Called when mouse click on the canvas during armies placement.
@@ -762,7 +933,7 @@ sub _ongui_canvas_place_armies {
 
     # checks...
     return if $country->owner->name ne $curplayer->name; # country owner
-    return if $diff + ($h->{fake_armies}{$id}//0) < 0;   # negative count (free army move! :-) )
+    return if $diff + ($h->{fake_armies_in}{$id}//0) < 0;   # negative count (free army move! :-) )
 
     # update armies count
     my $name = $country->continent->name;
@@ -775,7 +946,7 @@ sub _ongui_canvas_place_armies {
     }
 
     # redraw country.
-    $h->{fake_armies}{ $country->id } += $diff;
+    $h->{fake_armies_in}{ $country->id } += $diff;
     K->yield( 'chnum', $country );
 
     # allow redo button
