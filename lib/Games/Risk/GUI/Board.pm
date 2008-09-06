@@ -16,6 +16,7 @@ use warnings;
 use File::Basename qw{ fileparse };
 use Games::Risk::GUI::MoveArmies;
 use Image::Size;
+use List::Util     qw{ min };
 use Module::Util   qw{ find_installed };
 use POE;
 use Readonly;
@@ -57,9 +58,11 @@ sub spawn {
     my $session = POE::Session->create(
         args          => [ $args ],
         inline_states => {
-            # private events
+            # private events - session
             _start               => \&_onpriv_start,
             _stop                => sub { warn "gui-board shutdown\n" },
+            # private events - game
+            _clean_attack                  => \&_onpriv_clean_attack,
             # gui events
             _but_attack_done               => \&_ongui_but_attack_done,
             _but_attack_redo               => \&_ongui_but_attack_redo,
@@ -154,6 +157,27 @@ sub _onpub_attack_info {
         $h->{labels}{"defence_$i"}->configure(-image=>$h->{images}{"dice_$d"});
     }
 
+    # draw a line on the canvas
+    my $c = $h->{canvas};
+    state $i = 0;
+    my $x1 = $src->x; my $y1 = $src->y;
+    my $x2 = $dst->x; my $y2 = $dst->y;
+    $c->createLine(
+        $x1, $y1, $x2, $y2,
+        -arrow => 'last',
+        -tags  => ['attack', $i],
+        -fill  => $h->{curplayer}->color,
+        -width => 2,
+    );
+    my $srcid = $src->id;
+    my $dstid = $dst->id;
+    $c->lower('attack',"circle&&$srcid");
+    $c->lower('attack',"text&&$srcid");
+    $c->raise('attack',"circle&&$dstid");
+    $c->raise('attack',"text&&$dstid");
+    K->delay_set('_clean_attack' => 0.250, $i);
+    $i++;
+
     # update result labels
     my $ok  = $h->{images}{actcheck16};
     my $nok = $h->{images}{actcross16};
@@ -182,12 +206,14 @@ sub _onpub_country_redraw {
     my $owner = $country->owner;
     my $fakein  = $h->{fake_armies_in}{$id}  // 0;
     my $fakeout = $h->{fake_armies_out}{$id} // 0;
+    my $armies  = ($country->armies // 0) + $fakein - $fakeout;
 
     # FIXME: change radius to reflect number of armies
     my ($radius, $fill_color, $text) = defined $owner
-            ? (7, $owner->color, $country->armies + $fakein - $fakeout )
+            ? (7, $owner->color, $armies)
             : (5,       'white', '');
 
+    $radius += min(12,$armies-1)/2;
     my $x = $country->x;
     my $y = $country->y;
     my $x1 = $x - $radius; my $x2 = $x + $radius;
@@ -435,6 +461,17 @@ sub _onpub_player_lost {
 
 
 # -- private events
+
+#
+# event: _clean_attack( $i )
+#
+# remove line corresponding to attack $i from canvas.
+#
+sub _onpriv_clean_attack {
+    my ($h, $i) = @_[HEAP, ARG0];
+    $h->{canvas}->delete("attack&&$i");
+}
+
 
 #
 # Event: _start( \%params )
