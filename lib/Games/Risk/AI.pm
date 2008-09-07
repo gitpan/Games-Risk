@@ -14,13 +14,14 @@ use strict;
 use warnings;
 
 use Carp;
+use Games::Risk;
 use List::Util qw{ shuffle };
 use POE;
 use Readonly;
 use aliased 'POE::Kernel' => 'K';
 
 use base qw{ Class::Accessor::Fast };
-__PACKAGE__->mk_accessors( qw{ player } );
+__PACKAGE__->mk_accessors( qw{ game player } );
 
 my @NAMES = shuffle (
     'Napoleon',             # france,   1769  - 1821
@@ -65,6 +66,7 @@ sub new {
 
     # update other object attributes
     $self->player->name( $name );
+    $self->game( Games::Risk->new );    # get singleton ref
 
     return $self;
 }
@@ -117,6 +119,20 @@ sub description {
     $descr =~ s/\A\n+//;
     return $descr;
 }
+
+
+#
+# my @where = $ai->move_armies;
+#
+# See pod in Games::Risk::AI for information on the goal of this method.
+#
+# This implementation will not move any armies at all.
+#
+sub move_armies {
+    my ($self) = @_;
+    return;
+}
+
 
 
 #--
