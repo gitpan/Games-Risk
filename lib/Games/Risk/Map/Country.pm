@@ -13,7 +13,7 @@ use 5.010;
 use strict;
 use warnings;
 
-use List::Util qw{ first };
+use List::MoreUtils qw{ any };
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ armies continent greyval name owner x y
@@ -62,7 +62,7 @@ sub chown {
 #
 sub is_neighbour {
     my ($self, $c) = @_;
-    return first { $_ == $c } $self->neighbours;
+    return any { $_ eq $c } $self->neighbours;
 }
 
 
@@ -104,7 +104,7 @@ Games::Risk::Map::Country - map country
 
 =head1 SYNOPSIS
 
-    my $id = Games::Risk::Map::Country->new(\%params);
+    my $country = Games::Risk::Map::Country->new(\%params);
 
 
 
@@ -121,7 +121,7 @@ This module implements a map country, with all its characteristics.
 
 =over 4
 
-=item * my $player = Games::Risk::Map::Country->new( \%params )
+=item * my $country = Games::Risk::Map::Country->new( \%params )
 
 Create a new country. Mandatory params are C<name>, C<continent>,
 C<greyval>, C<x> and C<y> (see below in C<Accessors> section for a quick

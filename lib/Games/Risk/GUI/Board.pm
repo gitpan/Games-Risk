@@ -15,8 +15,10 @@ use warnings;
 
 use File::Basename qw{ fileparse };
 use Games::Risk::GUI::MoveArmies;
+use Image::Resize;
 use Image::Size;
 use List::Util     qw{ min };
+use MIME::Base64;
 use Module::Util   qw{ find_installed };
 use POE;
 use Readonly;
@@ -66,6 +68,7 @@ sub spawn {
             _stop                => sub { warn "gui-board shutdown\n" },
             # private events - game
             _clean_attack                  => \&_onpriv_clean_attack,
+            _country_redraw                => \&_onpub_country_redraw,
             # gui events
             _but_attack_done               => \&_ongui_but_attack_done,
             _but_attack_redo               => \&_ongui_but_attack_redo,
@@ -75,6 +78,7 @@ sub spawn {
             _canvas_attack_cancel          => \&_ongui_canvas_attack_cancel,
             _canvas_attack_from            => \&_ongui_canvas_attack_from,
             _canvas_attack_target          => \&_ongui_canvas_attack_target,
+            _canvas_configure              => \&_ongui_canvas_configure,
             _canvas_move_armies_cancel     => \&_ongui_canvas_move_armies_cancel,
             _canvas_move_armies_from       => \&_ongui_canvas_move_armies_from,
             _canvas_move_armies_target     => \&_ongui_canvas_move_armies_target,
@@ -163,8 +167,9 @@ sub _onpub_attack_info {
     # draw a line on the canvas
     my $c = $h->{canvas};
     state $i = 0;
-    my $x1 = $src->x; my $y1 = $src->y;
-    my $x2 = $dst->x; my $y2 = $dst->y;
+    my ($zoomx, $zoomy) = @{ $h->{zoom} };
+    my $x1 = $src->x * $zoomx; my $y1 = $src->y * $zoomy;
+    my $x2 = $dst->x * $zoomx; my $y2 = $dst->y * $zoomy;
     $c->createLine(
         $x1, $y1, $x2, $y2,
         -arrow => 'last',
@@ -218,13 +223,23 @@ sub _onpub_country_redraw {
             : (5,       'white', '');
 
     $radius += min(12,$armies-1)/2;
-    my $x = $country->x;
-    my $y = $country->y;
+    my ($zoomx, $zoomy) = @{ $h->{zoom} };
+    my $x = $country->x * $zoomx;
+    my $y = $country->y * $zoomy;
     my $x1 = $x - $radius; my $x2 = $x + $radius;
     my $y1 = $y - $radius; my $y2 = $y + $radius;
 
     # update canvas
-    $c->itemconfigure( "$id&&text", -text => $text);
+    #  - text
+    $c->delete( "$id&&text" );
+    $c->createText(
+        $x, $y+1,
+        -fill => 'white',
+        -tags => [ $country->id, 'text' ],
+        -text => $text,
+    );
+
+    #  - circle
     $c->delete( "$id&&circle" );
     $c->createOval(
         $x1, $y1, $x2, $y2,
@@ -244,36 +259,34 @@ sub _onpub_country_redraw {
 # their data.
 #
 sub _onpub_load_map {
-    my ($h, $map) = @_[HEAP, ARG0];
+    my ($h, $s, $map) = @_[HEAP, SESSION, ARG0];
     my $c = $h->{canvas};
 
     # remove everything
     $c->delete('all');
+    $c->CanvasBind('<Configure>', undef);
 
     # create background image
     my $img_path = $map->background;
-    my ($width,$height) = imgsize($img_path);
+    my ($width, $height) = imgsize($img_path);
+    # FIXME: adapt to current window width/height
     my $img = $c->Photo( -file=>$img_path );
     $c->configure(-width => $width, -height => $height);
-    #use Data::Dumper; say Dumper($img);
     $c->createImage(0, 0, -anchor=>'nw', -image=>$img, -tags=>['background']);
 
-    # create capitals
-    foreach my $country ( $map->countries ) {
-        # create text for country armies
-        $c->createText(
-            $country->x, $country->y+1,
-            -fill => 'white',
-            -tags => [ $country->id, 'text' ],
-        );
+    # store zoom information
+    $h->{orig_bg_size} = [$width, $height];
+    $h->{zoom}         = [1, 1];
 
-        # update text values & oval
-        K->yield('chown', $country);
-    }
+    # create capitals
+    K->yield('_country_redraw', $_) foreach $map->countries;
 
     # load greyscale image
-    $h->{greyscale} = $h->{toplevel}->Photo(-file=>$map->greyscale);
+    $h->{greyscale} = $c->Photo(-file=>$map->greyscale);
 
+    # allow the canvas to update itself & reinstall callback.
+    $c->idletasks;
+    $c->CanvasBind('<Configure>', [$s->postback('_canvas_configure'), Ev('w'), Ev('h')] );
 
     # store map and say we're done
     $h->{map} = $map;
@@ -521,6 +534,7 @@ sub _onpriv_start {
     my $fleft  = $top->Frame->pack(@LEFT,  @XFILL2);
     my $fright = $top->Frame->pack(@RIGHT, @FILL2);
 
+
     #-- frame for game state
     my $fgs = $fleft->Frame->pack(@TOP, @FILLX);
     $fgs->Label(-text=>'Game state: ')->pack(@LEFT);
@@ -568,7 +582,7 @@ sub _onpriv_start {
 
 
     #-- canvas
-    my $c = $fleft->Canvas->pack(@TOP);
+    my $c = $fleft->Canvas->pack(@TOP,@XFILL2);
     $h->{canvas} = $c;
     $c->CanvasBind( '<Motion>', [$s->postback('_canvas_motion'), Ev('x'), Ev('y')] );
     # removing class bindings
@@ -580,6 +594,7 @@ sub _onpriv_start {
         $top->bind('Tk::Canvas', "<Key-$key>", undef);
         $top->bind('Tk::Canvas', "<Control-Key-$key>", undef);
     }
+
 
     #-- bottom frame
     # the status bar
@@ -604,6 +619,7 @@ sub _onpriv_start {
     $fpl->Label(-text=>'Players')->pack(@TOP);
     my $fplist = $fpl->Frame->pack(@TOP);
     $h->{frames}{players} = $fplist;
+
 
     #-- dices frame
     my $fdice = $fright->Frame->pack(@TOP,@FILLX, -pady=>10);
@@ -871,6 +887,41 @@ sub _ongui_canvas_attack_target {
 
 
 #
+# event: _canvas_configure( undef, [$canvas, $w, $h] );
+#
+# Called when canvas is reconfigured. new width and height available
+# with ($w, $h). note that reconfigure is also window motion.
+#
+sub _ongui_canvas_configure {
+    my ($h, $args) = @_[HEAP, ARG1];
+    my ($c, $neww, $newh) = @$args;
+
+    # create a new image resized to fit new dims
+    my $orig = Image::Resize->new($h->{map}->background);
+    my $gd   = $orig->resize($neww, $newh, 0);
+
+    # install this new image inplace of previous background
+    my $img = $c->Photo( -data => encode_base64($gd->png) );
+    $c->delete('background');
+    $c->createImage(0, 0, -anchor=>'nw', -image=>$img, -tags=>['background']);
+    $c->lower('background', 'all');
+
+    # update zoom factors. note that we don't want to resize greyscale
+    # image since a) it takes time, which is unneeded since this image
+    # is not displayed and b) greyscale are quite close from country to
+    # country, and resizing will blur this to the point that it's no
+    # longer usable. therefore, just storing a zoom factor and using it
+    # will be enough for greyscale.
+    my ($origw, $origh) = @{ $h->{orig_bg_size} };
+    $h->{zoom} = [ $neww/$origw, $newh/$origh ];
+
+    # force country redraw, for them to be correctly placed on the new
+    # map.
+    K->yield('_country_redraw', $_) foreach $h->{map}->countries;
+}
+
+
+#
 # event: _canvas_motion( undef, [$canvas, $x, $y] );
 #
 # Called when mouse is moving over the $canvas at coords ($x,$y).
@@ -879,6 +930,11 @@ sub _ongui_canvas_motion {
     my ($h, $args) = @_[HEAP, ARG1];
 
     my (undef, $x,$y) = @$args; # first param is canvas
+
+    # correct with zoom factor
+    my ($zoomx, $zoomy) = @{ $h->{zoom} };
+    $x /= $zoomx;
+    $y /= $zoomy;
 
     # get greyscale pointed by mouse, this may die if moving too fast
     # outside of the canvas. we just need the 'red' component, since
@@ -1060,14 +1116,6 @@ sub _ongui_canvas_place_armies_initial {
     # tell controller that we've placed an army. controller will then
     # ask us to redraw the country.
     K->post('risk', 'initial_armies_placed', $country, 1);
-}
-
-#--
-# Subs
-
-# -- private subs
-
-sub _create_gui {
 }
 
 
