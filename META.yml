@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Games-Risk
-version:             0.5.3
+version:             0.6.0
 abstract:            classical 'risk' board game
 license:             gpl
 author:              
@@ -24,6 +24,7 @@ requires:
     Tk::Balloon:                   0
     Tk::Font:                      0
     Tk::JPEG:                      0
+    Tk::Pane:                      0
     Tk::PNG:                       0
     UNIVERSAL::require:            0
 meta-spec:
