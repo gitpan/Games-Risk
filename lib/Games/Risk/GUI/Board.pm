@@ -160,16 +160,15 @@ sub _onpub_attack_info {
     $c->createLine(
         $x1, $y1, $x2, $y2,
         -arrow => 'last',
-        -tags  => ['attack', $i],
-        -fill  => $h->{curplayer}->color,
-        -width => 2,
+        -tags  => ['attack', "attack$i"],
+        -fill  => 'yellow', #$h->{curplayer}->color,
+        -width => 4,
     );
     my $srcid = $src->id;
     my $dstid = $dst->id;
-    $c->lower('attack',"circle&&$srcid");
-    $c->lower('attack',"text&&$srcid");
-    $c->raise('attack',"circle&&$dstid");
-    $c->raise('attack',"text&&$dstid");
+    $c->raise('attack', 'all');
+    $c->raise("country$srcid", 'attack');
+    $c->idletasks;
     my $wait = $h->{curplayer}->type eq 'ai' ? $WAIT_CLEAN_AI : $WAIT_CLEAN_HUMAN;
     K->delay_set('_clean_attack' => $wait, $i);
     $i++;
@@ -206,10 +205,10 @@ sub _onpub_country_redraw {
 
     # FIXME: change radius to reflect number of armies
     my ($radius, $fill_color, $text) = defined $owner
-            ? (7, $owner->color, $armies)
-            : (5,       'white', '');
+            ? (8, $owner->color, $armies)
+            : (6,       'white', '');
 
-    $radius += min(12,$armies-1)/2;
+    $radius += min(16,$armies-1)/2;
     my ($zoomx, $zoomy) = @{ $h->{zoom} };
     my $x = $country->x * $zoomx;
     my $y = $country->y * $zoomy;
@@ -217,24 +216,25 @@ sub _onpub_country_redraw {
     my $y1 = $y - $radius; my $y2 = $y + $radius;
 
     # update canvas
-    #  - text
-    $c->delete( "$id&&text" );
-    $c->createText(
-        $x, $y+1,
-        -fill => 'white',
-        -tags => [ $country->id, 'text' ],
-        -text => $text,
-    );
-
+    $c->delete( "country$id" );
     #  - circle
-    $c->delete( "$id&&circle" );
     $c->createOval(
         $x1, $y1, $x2, $y2,
         -fill    => $fill_color,
         -outline => 'black',
-        -tags    => [ $country->id, 'circle' ],
+        -tags    => [ "country$id", 'circle' ],
     );
-    $c->raise( "$id&&text", "$id&&circle" );
+
+    #  - text
+    $c->createText(
+        $x, $y+1,
+        -fill => 'white',
+        -tags => [ "country$id", 'text' ],
+        -text => $text,
+    );
+
+    $c->raise("country$id&&circle", 'all');
+    $c->raise("country$id&&text",   'all');
 }
 
 
@@ -473,7 +473,7 @@ sub _onpub_player_lost {
 #
 sub _onpriv_clean_attack {
     my ($h, $i) = @_[HEAP, ARG0];
-    $h->{canvas}->delete("attack&&$i");
+    $h->{canvas}->delete("attack$i");
 }
 
 
