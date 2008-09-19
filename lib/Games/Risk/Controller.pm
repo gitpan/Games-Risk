@@ -211,9 +211,19 @@ sub _onpub_attack_move {
     # FIXME: check $nb is more than min
     # FIXME: check $nb is less than max - 1
 
-    # check if previous $dst owner has lost.
     my $looser = $dst->owner;
-    if ( scalar($looser->countries) == 1 ) {
+
+    # update the countries
+    $src->armies( $src->armies - $nb );
+    $dst->armies( $nb );
+    $dst->chown( $src->owner );
+
+    # update the gui
+    K->post('board', 'chnum', $src); # FIXME: broadcast
+    K->post('board', 'chown', $dst); # FIXME: broadcast
+
+    # check if previous $dst owner has lost.
+    if ( scalar($looser->countries) == 0 ) {
         # omg! one player left
         $h->player_lost($looser);
         K->post('board', 'player_lost', $looser); # FIXME: broadcast
@@ -226,21 +236,25 @@ sub _onpub_attack_move {
             when ('ai')    { $session = $player->name; }
             when ('human') { $session = 'cards'; } #FIXME: broadcast
         }
+        my $sessionloose;
+        given ($looser->type) {
+            when ('ai')    { $sessionloose = $player->name; }
+            when ('human') { $sessionloose = 'cards'; } #FIXME: broadcast
+        }
         foreach my $card ( @cards ) {
             $looser->card_del($card);
             $player->card_add($card);
             K->post($session, 'card_add', $card);
+            K->post($sessionloose, 'card_del', $card);
+        }
+
+        # check if game is over
+        my @active = $h->players_active;
+        if ( scalar @active == 1 ) {
+            K->post('board', 'game_over', $player); # FIXME: broadcast
+            return;
         }
     }
-
-    # update the countries
-    $src->armies( $src->armies - $nb );
-    $dst->armies( $nb );
-    $dst->chown( $src->owner );
-
-    # update the gui
-    K->post('board', 'chnum', $src); # FIXME: broadcast
-    K->post('board', 'chown', $dst); # FIXME: broadcast
 
     # continue attack
     my $session;

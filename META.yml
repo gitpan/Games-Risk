@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Games-Risk
-version:             0.6.2
+version:             1.0.0
 abstract:            classical 'risk' board game
 license:             gpl
 author:              
@@ -11,6 +11,7 @@ requires:
     aliased:                       0
     Class::Accessor::Fast:         0
     File::Basename:                0
+    Getopt::Euclid:                0
     Image::Resize:                 0
     Image::Size:                   0
     List::MoreUtils:               0
