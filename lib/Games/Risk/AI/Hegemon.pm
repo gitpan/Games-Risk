@@ -202,9 +202,9 @@ sub attack_move {
 
     # attempt to safeguard critical areas when moving armies.
     given ( $nbsrc ) {
-        when($_>6)            { return $max; }
-        when($_>3 && $_<=6)   { return $max; } # FIXME: always $max
-        default               { return $max; } # FIXME: always $max
+        when($_>8)            { return $max-4; }
+        when($_>5 && $_<=7)   { return 4; }
+        default               { return 3; }
     }
 }
 
