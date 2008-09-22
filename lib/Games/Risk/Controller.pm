@@ -122,7 +122,7 @@ sub _onpub_armies_placed {
     $h->armies($left);
 
     $country->armies( $country->armies + $nb );
-    K->post('board', 'chnum', $country); # FIXME: broadcast
+    $h->send_to_all('chnum', $country);
 
     if ( $left == 0 ) {
         K->delay_set( '_armies_placed' => $WAIT );
@@ -181,7 +181,7 @@ sub _onpub_attack {
 
     # post damages
     # FIXME: only for human player?
-    K->post('board', 'attack_info', $src, $dst, \@attack, \@defence); # FIXME: broadcast
+    $h->send_to_all('attack_info', $src, $dst, \@attack, \@defence);
 
     my $wait = $player->type eq 'ai' ? $ATTACK_WAIT_AI : $ATTACK_WAIT_HUMAN;
     K->delay_set( '_attack_done' => $wait, $src, $dst );
@@ -219,51 +219,35 @@ sub _onpub_attack_move {
     $dst->chown( $src->owner );
 
     # update the gui
-    K->post('board', 'chnum', $src); # FIXME: broadcast
-    K->post('board', 'chown', $dst); # FIXME: broadcast
+    $h->send_to_all('chnum', $src);
+    $h->send_to_all('chown', $dst);
 
     # check if previous $dst owner has lost.
     if ( scalar($looser->countries) == 0 ) {
         # omg! one player left
         $h->player_lost($looser);
-        K->post('board', 'player_lost', $looser); # FIXME: broadcast
+        $h->send_to_all('player_lost', $looser);
 
         # distribute cards from lost player to the one who crushed her
         my @cards = $looser->cards;
         my $player = $h->curplayer;
-        my $session;
-        given ($player->type) {
-            when ('ai')    { $session = $player->name; }
-            when ('human') { $session = 'cards'; } #FIXME: broadcast
-        }
-        my $sessionloose;
-        given ($looser->type) {
-            when ('ai')    { $sessionloose = $player->name; }
-            when ('human') { $sessionloose = 'cards'; } #FIXME: broadcast
-        }
         foreach my $card ( @cards ) {
             $looser->card_del($card);
             $player->card_add($card);
-            K->post($session, 'card_add', $card);
-            K->post($sessionloose, 'card_del', $card);
+            $h->send_to_one($player, 'card_add', $card);
+            $h->send_to_one($looser, 'card_del', $card);
         }
 
         # check if game is over
         my @active = $h->players_active;
         if ( scalar @active == 1 ) {
-            K->post('board', 'game_over', $player); # FIXME: broadcast
+            $h->send_to_all('game_over', $player);
             return;
         }
     }
 
     # continue attack
-    my $session;
-    my $player = $h->curplayer;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'attack');
+    $h->send_to_one($h->curplayer, 'attack');
 }
 
 
@@ -299,12 +283,7 @@ sub _onpub_cards_exchange {
     $h->armies($armies);
 
     # signal that player has some more armies...
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'place_armies', $bonus); # FIXME: broadcast
+    $h->send_to_one($player, 'place_armies', $bonus);
 
     # ... and maybe some country bonus...
     foreach my $card ( @cards ) {
@@ -312,16 +291,12 @@ sub _onpub_cards_exchange {
         my $country = $card->country;
         next unless $country->owner eq $player;
         $country->armies($country->armies + 2);
-        K->post('board', 'chnum', $country); # FIXME: broadcast
+        $h->send_to_all('chnum', $country);
     }
 
     # ... but some cards less.
     $player->card_del($_) foreach @cards;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'cards'; } #FIXME: broadcast
-    }
-    K->post($session, 'card_del', @cards);
+    $h->send_to_one($player, 'card_del', @cards);
 
     # finally, put back the cards on the deck
     $h->map->card_return($_) foreach @cards;
@@ -342,7 +317,7 @@ sub _onpub_initial_armies_placed {
     # FIXME: check validity regarding continent
 
     $country->armies( $country->armies + $nb );
-    K->post('board', 'chnum', $country); # FIXME: broadcast
+    $h->send_to_all('chnum', $country);
     K->delay_set( '_place_armies_initial' => $WAIT );
 }
 
@@ -380,8 +355,8 @@ sub _onpub_move_armies {
     $src->armies( $src->armies - $nb );
     $dst->armies( $dst->armies + $nb );
 
-    K->post('board', 'chnum', $src); # FIXME: broadcast
-    K->post('board', 'chnum', $dst); # FIXME: broadcast
+    $h->send_to_all('chnum', $src);
+    $h->send_to_all('chnum', $dst);
 }
 
 
@@ -443,7 +418,7 @@ sub _onpriv_assign_countries {
         # store new owner & place one army to start with
         $country->chown($player);
         $country->armies(1);
-        K->post('board', 'chown', $country); # FIXME: broadcast
+        $h->send_to_all('chown', $country);
     }
 
     # go on to the next phase
@@ -456,39 +431,24 @@ sub _onpriv_assign_countries {
 #
 sub _onpriv_attack {
     my $h = $_[HEAP];
-
-    my $player = $h->curplayer;
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'attack');
-    K->post('cards', 'attack'); # FIXME: should not be alone like this, need a multiplexed in GR::GUI
-    # FIXME: even more since the gui always get this event, even if it's not its turn to play
+    $h->send_to_one($h->curplayer, 'attack');
 }
 
 
 #
 # event: _attack_done($src, $dst)
 #
-# check the outcome of attack of $dst from $src only used as a
+# check the outcome of attack of $dst from $src. only used as a
 # temporization, so this handler will always serve the same event.
 #
 sub _onpriv_attack_done {
     my ($h, $src, $dst) = @_[HEAP, ARG0..$#_];
 
-    # update gui
-    K->post('board', 'chnum', $src); # FIXME: broadcast
-    K->post('board', 'chnum', $dst); # FIXME: broadcast
-
-    # get who to send msg to
     my $player = $h->curplayer;
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
+
+    # update gui
+    $h->send_to_all('chnum', $src);
+    $h->send_to_all('chnum', $dst);
 
     # check outcome
     if ( $dst->armies <= 0 ) {
@@ -499,14 +459,8 @@ sub _onpriv_attack_done {
         if ( not $h->got_card ) {
             $h->got_card(1);
             my $card = $h->map->card_get;
-            my $player = $h->curplayer;
-            my $session;
-            given ($player->type) {
-                when ('ai')    { $session = $player->name; }
-                when ('human') { $session = 'cards'; } #FIXME: broadcast
-            }
             $player->card_add($card);
-            K->post($session, 'card_add', $card);# FIXME: broadcast
+            $h->send_to_one($player, 'card_add', $card);
         }
 
         # move armies to invade country
@@ -516,16 +470,11 @@ sub _onpriv_attack_done {
 
         } else {
             # ask how many armies to move
-            my $session;
-            given ($player->type) {
-                when ('ai')    { $session = $player->name; }
-                when ('human') { $session = 'move-armies'; } #FIXME: broadcast
-            }
-            K->post($session, 'attack_move', $src, $dst, $h->nbdice);
+            $h->send_to_one($player, 'attack_move', $src, $dst, $h->nbdice);
         }
 
     } else {
-        K->post($session, 'attack');
+        $h->send_to_one($player, 'attack');
     }
 }
 
@@ -536,13 +485,7 @@ sub _onpriv_attack_done {
 sub _onpriv_cards_exchange {
     my $h = $_[HEAP];
 
-    my $player = $h->curplayer;
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'move-armies'; } #FIXME: broadcast
-    }
-    K->post($session, 'exchange_cards');
+    $h->send_to_one($h->curplayer, 'exchange_cards');
     K->yield('_cards_exchanged');
 }
 
@@ -564,15 +507,15 @@ sub _onpriv_create_players {
 
     @players = shuffle @players;
 
-    #FIXME: broadcast
+    $h->_players(\@players); # FIXME: private
+    $h->_players_active(\@players); # FIXME: private
+
+    # broadcast info
     $h->wait_for( {} );
     foreach my $player ( @players ) {
         $h->wait_for->{ $player->name } = 1;
-        K->post('board', 'player_add', $player);
+        $h->send_to_all('player_add', $player);
     }
-
-    $h->_players(\@players); # FIXME: private
-    $h->_players_active(\@players); # FIXME: private
 }
 
 
@@ -604,13 +547,7 @@ sub _onpriv_move_armies {
     $h->move_out( {} );
 
     # add current player to move
-    my $player = $h->curplayer;
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'move_armies');
+    $h->send_to_one($h->curplayer, 'move_armies');
 }
 
 
@@ -627,12 +564,7 @@ sub _onpriv_place_armies {
     $nb = 3 if $nb < 3;
 
     # signal player
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'place_armies', $nb);
+    $h->send_to_one($player, 'place_armies', $nb);
 
     # continent bonus
     my $bonus = 0;
@@ -641,10 +573,8 @@ sub _onpriv_place_armies {
 
         my $bonus = $c->bonus;
         $nb += $bonus;
-        K->post($session, 'place_armies', $bonus, $c); # FIXME: broadcast
+        $h->send_to_one($player, 'place_armies', $bonus, $c);
     }
-    K->post('cards', 'place_armies'); # FIXME: should not be alone like this, need a multiplexed in GR::GUI
-    # FIXME: even more since the gui always get this event, even if it's not its turn to play
 
     $h->armies($nb);
 }
@@ -669,7 +599,7 @@ sub _onpriv_place_armies_initial {
 
         $h->armies($START_ARMIES); # FIXME: hardcoded
         $left = $h->{armies};
-        K->post('board', 'place_armies_initial_count', $left); # FIXME: broadcast & ai (?)
+        $h->send_to_all('place_armies_initial_count', $left);
     }
 
     # get next player that should place an army
@@ -692,15 +622,10 @@ sub _onpriv_place_armies_initial {
 
     # update various guis with current player
     $h->curplayer( $player );
-    K->post('board', 'player_active', $player); # FIXME: broadcast
+    $h->send_to_all('player_active', $player);
 
     # request army to be placed.
-    my $session;
-    given ($player->type) {
-        when ('ai')    { $session = $player->name; }
-        when ('human') { $session = 'board'; } #FIXME: broadcast
-    }
-    K->post($session, 'place_armies_initial');
+    $h->send_to_one($player, 'place_armies_initial');
 }
 
 
@@ -722,7 +647,7 @@ sub _onpriv_player_next {
     $h->got_card(0);
 
     # update various guis with current player
-    K->post('board', 'player_active', $player); # FIXME: broadcast
+    $h->send_to_all('player_active', $player);
 
     K->delay_set('_player_begun'=>$TURN_WAIT);
 }

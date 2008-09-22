@@ -14,13 +14,13 @@ use strict;
 use warnings;
 
 use Games::Risk::Controller;
-use Games::Risk::GUI::Board;
+use Games::Risk::GUI;
 use List::Util qw{ shuffle };
 use POE;
 use aliased 'POE::Kernel' => 'K';
 
 # Public variables of the module.
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.2';
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{
@@ -51,11 +51,8 @@ sub new {
     # launch controller, and everything needed
     Games::Risk::Controller->spawn($singleton);
 
-    # prettyfying tk app.
-    # see http://www.perltk.org/index.php?option=com_content&task=view&id=43&Itemid=37
-    $poe_main_window->optionAdd('*BorderWidth' => 1);
-
-    Games::Risk::GUI::Board->spawn({toplevel=>$poe_main_window});
+    # launch gui
+    Games::Risk::GUI->spawn;
 }
 
 
@@ -149,7 +146,7 @@ sub players_active {
 #
 sub players {
     my ($self) = @_;
-    return @{ $self->_players };
+    return @{ $self->_players // [] };
 }
 
 
@@ -168,6 +165,30 @@ sub players_reset {
 }
 
 
+#
+# $game->send_to_all($event, @params);
+#
+# Send $event (with @params) to all players.
+#
+sub send_to_all {
+    my ($self, @msg) = @_;
+
+    $self->send_to_one($_,@msg) for $self->players;
+}
+
+
+#
+# $game->send_to_one($player, $event, @params);
+#
+# Send $event (with @params) to one $player.
+#
+sub send_to_one {
+    my ($self, $player, @msg) = @_;
+
+    K->post( $player->name, @msg );
+    return unless $player->type eq 'human';
+    K->post('gui', @msg );
+}
 
 
 1;
@@ -280,6 +301,16 @@ Return the list of active players (Games::Risk::Player objects).
 Mark all players to be in "turn to do", effectively marking them as
 still in play. Typically called during initial army placing, or real
 game start.
+
+
+=item * $game->send_to_all($event, @params)
+
+Send C<$event> (with C<@params>) to all players.
+
+
+=item * $game->send_to_one($player, $event, @params)
+
+Send C<$event> (with C<@params>) to one C<$player>.
 
 
 =back
