@@ -24,18 +24,6 @@ use aliased 'POE::Kernel' => 'K';
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ game player } );
 
-my @NAMES = shuffle (
-    'Napoleon',             # france,   1769  - 1821
-    'Staline',              # russia,   1878  - 1953
-    'Alexander the Great',  # greece,   356BC - 323BC
-    'Julius Caesar',        # rome,     100BC - 44BC
-    'Attila',               # hun,      406   - 453
-    'Genghis Kahn',         # mongolia, 1162  - 1227
-    'Charlemagne',          # france,   747   - 814
-    'Saladin',              # iraq,     1137  - 1193
-    'foobar',               # perl
-);
-my $Id_name = 0;
 
 
 #--
@@ -53,21 +41,13 @@ my $Id_name = 0;
 # parameters:
 #  - player: the Game::Risk::Player associated to the AI. (mandatory)
 #
-# Note that the AI will automatically get a name, and update the player object.
-#
 sub new {
     my ($pkg, $args) = @_;
-
-    # assign a new color
-    my $nbnames = scalar(@NAMES);
-    croak "can't assign more than $nbnames names" if $Id_name >= $nbnames;
-    my $name = $NAMES[ $Id_name++ ];
 
     # create the object
     my $self = bless $args, $pkg;
 
-    # update other object attributes
-    $self->player->name( $name );
+    # update object attributes
     $self->game( Games::Risk->new );    # get singleton ref
 
     return $self;
@@ -98,6 +78,7 @@ sub spawn {
             move_armies           => \&_onpub_move_armies,
             place_armies          => \&_onpub_place_armies,
             place_armies_initial  => \&_onpub_place_armies_initial,
+            shutdown              => \&_onpub_shutdown,
         },
     );
     return $session->ID;
@@ -273,6 +254,17 @@ sub _onpub_place_armies_initial {
     my ($where) = $ai->place_armies(1);
     my ($country, $nb) = @$where;
     K->post('risk', 'initial_armies_placed', $country, $nb);
+}
+
+
+#
+# event: shutdown()
+#
+# request the ai to terminate itself.
+#
+sub _onpub_shutdown {
+    my $ai = $_[HEAP];
+    K->alias_remove( $ai->player->name );
 }
 
 

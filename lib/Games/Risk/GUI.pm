@@ -14,6 +14,7 @@ use strict;
 use warnings;
 
 use Games::Risk::GUI::Board;
+use Games::Risk::GUI::Startup;
 use POE;
 
 use aliased 'POE::Kernel' => 'K';
@@ -30,11 +31,11 @@ sub spawn {
         args          => [ $args ],
         inline_states => {
             # private events
-            _resize        => \&_onpriv_resize,
             _start         => \&_onpriv_start,
             _stop          => sub { warn "GUI shutdown\n" },
             # public events
             _default       => \&_onpub_default,
+            new_game       => \&_onpub_new_game,
         },
     );
     return $session->ID;
@@ -52,6 +53,12 @@ sub _onpub_default {
     K->post($_, $event, @$args) foreach qw{ board cards gameover move-armies };
 }
 
+sub _onpub_new_game {
+    my $args = $_[ARG0];
+    my $mw = $poe_main_window->Toplevel;
+    Games::Risk::GUI::Board->spawn( { toplevel=>$mw, %$args } );
+}
+
 
 # -- private events
 
@@ -67,12 +74,10 @@ sub _onpriv_start {
     $poe_main_window->optionAdd('*BorderWidth' => 1);
 
     # create main window
-    Games::Risk::GUI::Board->spawn({toplevel=>$poe_main_window});
+    Games::Risk::GUI::Startup->spawn({toplevel=>$poe_main_window});
 
     # register aliases
     K->alias_set('gui');
-
-    K->post('risk', 'gui_ready');
 }
 
 

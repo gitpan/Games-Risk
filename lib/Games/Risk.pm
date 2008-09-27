@@ -20,11 +20,11 @@ use POE;
 use aliased 'POE::Kernel' => 'K';
 
 # Public variables of the module.
-our $VERSION = '1.0.3';
+our $VERSION = '1.1.0';
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{
-    armies curplayer dst got_card map move_in move_out nbdice src wait_for
+    armies curplayer dst got_card map move_in move_out nbdice src startup_info wait_for
     _players _players_active _players_turn_done _players_turn_todo
 } );
 
@@ -151,12 +151,27 @@ sub players {
 
 
 #
-# $game->players_reset;
+# $game->players_reset( @players );
+#
+# Remove all players, and replace them by @players.
+#
+sub players_reset {
+    my ($self, @players) = @_;
+
+    $self->_players(\@players);
+    $self->_players_active(\@players);
+    $self->_players_turn_done([]);
+    $self->_players_turn_todo(\@players);
+}
+
+
+#
+# $game->players_reset_turn;
 #
 # Mark all players to be in "turn to do". Typically called during
 # initial army placing, or real game start.
 #
-sub players_reset {
+sub players_reset_turn {
     my ($self) = @_;
 
     my @players = @{ $self->_players_active };
@@ -296,7 +311,12 @@ some of those players may have already lost.
 Return the list of active players (Games::Risk::Player objects).
 
 
-=item * $game->players_reset()
+=item * $game->players_reset( @players )
+
+Remove all players, and replace them by C<@players>.
+
+
+=item * $game->players_reset_turn()
 
 Mark all players to be in "turn to do", effectively marking them as
 still in play. Typically called during initial army placing, or real

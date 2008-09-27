@@ -55,10 +55,9 @@ sub spawn {
             _start                  => \&_onpriv_start,
             _stop                   => sub { warn "GR shutdown\n" },
             # private events - game states
-            _started                => \&_onpriv_load_map,
             _gui_ready              => \&_onpriv_create_players,
             _players_created        => \&_onpriv_assign_countries,
-            _countries_assigned     => \&_onpriv_place_armies_initial,
+            _countries_assigned     => \&_onpriv_place_armies_initial_count,
             _place_armies_initial   => \&_onpriv_place_armies_initial,
             _initial_armies_placed  => \&_onpriv_turn_begin,
             _begin_turn             => \&_onpriv_turn_begin,
@@ -70,7 +69,6 @@ sub spawn {
             _attack_end             => \&_onpriv_move_armies,
             _armies_moved           => \&_onpriv_player_next,
             # public events
-            window_created          => \&_onpub_window_created,
             map_loaded              => \&_onpub_map_loaded,
             player_created          => \&_onpub_player_created,
             initial_armies_placed   => \&_onpub_initial_armies_placed,
@@ -81,6 +79,9 @@ sub spawn {
             attack_move             => \&_onpub_attack_move,
             attack_end              => \&_onpub_attack_end,
             move_armies             => \&_onpub_move_armies,
+            new_game                => \&_onpub_new_game,
+            quit                    => \&_onpub_quit,
+            shutdown                => \&_onpub_shutdown,
         },
     );
     return $session->ID;
@@ -334,6 +335,28 @@ sub _onpub_map_loaded {
 
 
 #
+# event: new_game
+#
+# fired when user wants to start a new game.
+#
+sub _onpub_new_game {
+    my ($h, $args) = @_[HEAP, ARG0];
+
+    # load map
+    # FIXME: hardcoded
+    my $path = find_installed(__PACKAGE__);
+    my (undef, $dirname, undef) = fileparse($path);
+    $path = "$dirname/maps/risk.map";
+    my $map = Games::Risk::Map->new;
+    $map->load_file($path);
+    $h->map($map);
+
+    K->post('gui', 'new_game', { map => $map });
+    $h->startup_info($args);
+}
+
+
+#
 # event: move_armies( $src, $dst, $nb )
 #
 # fired when player wants to move $nb armies from $src to $dst.
@@ -376,23 +399,23 @@ sub _onpub_player_created {
 
 
 #
-# event: window_created( $window );
+# event: quit()
 #
-# fired when a gui window has finished initialized.
+# fired by startup window to quit the game.
 #
-sub _onpub_window_created {
-    my ($h, $state, $win) = @_[HEAP, STATE, ARG0];
+sub _onpub_quit {
+    K->alias_remove('risk');
+}
 
-    # board needs to load the map
-    if ( $win eq 'board' ) {
-        if ( not defined $h->map ) {
-            # map is not yet loaded, let's give it some more time
-            # by just re-firing current event
-            K->yield($state, $win);
-            return;
-        }
-        K->post('board', 'load_map', $h->map);
-    }
+#
+# event: shutdown()
+#
+# fired when board window has been closed, requesting all ais and
+# remaining windows to shutdown too.
+#
+sub _onpub_shutdown {
+    my $h = $_[HEAP];
+    $h->send_to_all('shutdown');
 }
 
 
@@ -496,19 +519,50 @@ sub _onpriv_cards_exchange {
 sub _onpriv_create_players {
     my $h = $_[HEAP];
 
-    # create players - FIXME: number of players
+    # create players according to startup information.
+    my $players = delete $h->startup_info->{players};
     my @players;
-    push @players, Games::Risk::Player->new({type=>'human'});
-    push @players, Games::Risk::Player->new({type=>'ai', ai_class => 'Games::Risk::AI::Blitzkrieg'});
-    push @players, Games::Risk::Player->new({type=>'ai', ai_class => 'Games::Risk::AI::Blitzkrieg'});
-    push @players, Games::Risk::Player->new({type=>'ai', ai_class => 'Games::Risk::AI::Hegemon'});
-    push @players, Games::Risk::Player->new({type=>'ai', ai_class => 'Games::Risk::AI::Hegemon'});
-    push @players, Games::Risk::Player->new({type=>'ai', ai_class => 'Games::Risk::AI::Hegemon'});
+    foreach my $p ( shuffle @$players ) {
+        my $name  = $p->{name};
+        my $type  = $p->{type};
+        my $color = $p->{color};
+        die "player cannot have an empty name" unless $name;
 
-    @players = shuffle @players;
+        my $player;
+        given ($type) {
+            when ('Human') {
+                # human player
+                $player = Games::Risk::Player->new({
+                        name  => $name,
+                        color => $color,
+                        type  => 'human',
+                });
+            }
+            when (/^Computer, (\w+)$/) {
+                # artificial intelligence
+                my %class = (
+                    'easy' => 'Games::Risk::AI::Blitzkrieg',
+                    'hard' => 'Games::Risk::AI::Hegemon',
+                );
+                $player = Games::Risk::Player->new({
+                        name     => $name,
+                        color    => $color,
+                        type     => 'ai',
+                        ai_class => $class{$1},
+                });
+            }
+            default {
+                # error
+                die "unknown player type: $type";
+            }
+        }
 
-    $h->_players(\@players); # FIXME: private
-    $h->_players_active(\@players); # FIXME: private
+        # store new player
+        push @players, $player;
+    }
+
+    # store new set of players
+    $h->players_reset(@players);
 
     # broadcast info
     $h->wait_for( {} );
@@ -516,23 +570,6 @@ sub _onpriv_create_players {
         $h->wait_for->{ $player->name } = 1;
         $h->send_to_all('player_add', $player);
     }
-}
-
-
-#
-# load map in memory.
-#
-sub _onpriv_load_map {
-    my $h = $_[HEAP];
-
-    # load model
-    # FIXME: hardcoded
-    my $path = find_installed(__PACKAGE__);
-    my (undef, $dirname, undef) = fileparse($path);
-    $path = "$dirname/maps/risk.map";
-    my $map = Games::Risk::Map->new;
-    $map->load_file($path);
-    $h->map($map);
 }
 
 
@@ -592,16 +629,6 @@ sub _onpriv_place_armies_initial {
     # get number of armies to place left
     my $left = $h->armies;
 
-    if ( not defined $left ) {
-        # undef means that we are just beginning initial armies
-        # placement. let's initialize list of players.
-        $h->players_reset;
-
-        $h->armies($START_ARMIES); # FIXME: hardcoded
-        $left = $h->{armies};
-        $h->send_to_all('place_armies_initial_count', $left);
-    }
-
     # get next player that should place an army
     my $player = $h->player_next;
 
@@ -627,6 +654,23 @@ sub _onpriv_place_armies_initial {
     # request army to be placed.
     $h->send_to_one($player, 'place_armies_initial');
 }
+
+
+#
+# tell players how many initial armies they have.
+#
+sub _onpriv_place_armies_initial_count {
+    my $h = $_[HEAP];
+
+    # initialize number of initial armies, and tell players about it.
+    $h->armies($START_ARMIES); # FIXME: hardcoded
+    $h->send_to_all('place_armies_initial_count', $h->armies);
+
+    # let's initialize list of players.
+    $h->players_reset_turn;
+    K->yield('_place_armies_initial');
+}
+
 
 
 #
@@ -660,7 +704,7 @@ sub _onpriv_turn_begin {
     my $h = $_[HEAP];
 
     # get next player
-    $h->players_reset;
+    $h->players_reset_turn;
 
     # placing armies
     K->yield('_turn_begun');
@@ -676,10 +720,7 @@ sub _onpriv_turn_begin {
 # to %params, same as spawn() received.
 #
 sub _onpriv_start {
-    my $h = $_[HEAP];
-
     K->alias_set('risk');
-    K->yield( '_started' );
 }
 
 
