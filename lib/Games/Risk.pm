@@ -20,7 +20,7 @@ use POE;
 use aliased 'POE::Kernel' => 'K';
 
 # Public variables of the module.
-our $VERSION = '1.1.0';
+our $VERSION = '1.1.1';
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{
@@ -75,6 +75,31 @@ sub cards_reset {
         my @cards = $player->cards;
         $map->card_return($_) for @cards;
     }
+}
+
+
+#
+# $game->destroy;
+#
+# Break all circular references in $game, to reclaim all objects
+# referenced.
+#
+sub destroy {
+    my ($self) = @_;
+
+    # breaking players (& ais) references
+    $_->destroy for $self->players;
+    $self->curplayer(undef);
+    $self->_players([]);
+    $self->_players_active([]);
+    $self->_players_turn_done([]);
+    $self->_players_turn_todo([]);
+
+    # breaking map (& countries & continents) references
+    $self->map->destroy;
+    $self->map(undef);
+    $self->src(undef);
+    $self->dst(undef);
 }
 
 
@@ -287,6 +312,12 @@ the current C<Games::Risk::Map> object of the game.
 =item * $game->cards_reset;
 
 Put back all cards given to players to the deck.
+
+
+=item * $game->destroy;
+
+Break all circular references in C<$game>, to reclaim all objects
+referenced.
 
 
 =item * $game->player_lost( $player )

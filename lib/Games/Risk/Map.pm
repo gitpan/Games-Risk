@@ -27,9 +27,28 @@ my $id_continent;
 
 
 #--
-# SUBROUTINES
+# METHODS
 
-# -- public subs
+# -- public methods
+
+#
+# $map->destroy;
+#
+# Break all circular references in $map, to reclaim all continents and
+# countries objects.
+#
+sub destroy {
+    my ($self) = @_;
+
+    $_->destroy for @{ $self->_cards };
+    $_->destroy for $self->continents;
+    $_->destroy for $self->countries;
+
+    $self->_cards([]);
+    $self->_continents([]);
+    $self->_countries([]);
+}
+
 
 #
 # my $card = $map->card_get;
@@ -162,8 +181,12 @@ sub load_file {
     #use YAML; say Dump($self);
 }
 
+#--
+# SUBROUTINES
+
 # -- private subs
-# the following are UGLY, UGLY, UGLY!
+
+# FIXME: the following are UGLY, UGLY, UGLY!
 
 sub _parse_file_section_ {
     my ($self, $line) = @_;
@@ -189,6 +212,7 @@ sub _parse_file_section_continents {
     # get continent params
     $id_continent++;
     my ($name, $bonus, undef) = split /\s+/, $line;
+    $name =~ s/-/ /g;
 
     # create and store continent
     my $continent = Continent->new({id=>$id_continent, name=>$name, bonus=>$bonus});
@@ -334,6 +358,11 @@ the path to the greyscale bitmap for the board.
 =head2 Object methods
 
 =over 4
+
+=item * $map->destroy()
+
+Break all circular references in C<$map>, to prevent memory leaks.
+
 
 =item * my $card = $map->card_get()
 

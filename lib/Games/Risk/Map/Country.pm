@@ -19,8 +19,6 @@ use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ armies continent greyval name owner x y
     _neighbours } );
 
-# FIXME: resolve circular references for continents and owner
-
 
 #--
 # METHODS
@@ -43,6 +41,20 @@ sub chown {
     # store new owner
     $self->owner($player);
     $player->country_add($self);
+}
+
+
+#
+# $country->destroy;
+#
+# Remove all circular references of $country, to prevent memory leaks.
+#
+#sub DESTROY { say "destroy: $_[0]"; }
+sub destroy {
+    my ($self) = @_;
+    $self->continent(undef);
+    $self->owner(undef);
+    $self->_neighbours([]);
 }
 
 
@@ -192,6 +204,11 @@ the y location of the country capital.
 
 Change the owner of the C<$country> to be C<$player>. This implies updating
 cross-reference for previous owner and new one.
+
+
+=item * $country->destroy()
+
+Remove all circular references of C<$country>, to prevent memory leaks.
 
 
 =item * my $bool = $country->is_neighbour( $c )
