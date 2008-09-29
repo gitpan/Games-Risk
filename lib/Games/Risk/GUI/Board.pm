@@ -122,6 +122,10 @@ sub _onpub_attack {
         && $h->{src}->armies > 1 ) {
         $h->{buttons}{attack_redo}->configure(@ENON);
         $h->{toplevel}->bind('<Key-space>', $s->postback('_but_attack_redo'));
+
+        # auto-reattack?
+        K->yield('_but_attack_redo') if $h->{auto_reattack} && $h->{src}->armies >= 4;
+
     } else {
         $h->{buttons}{attack_redo}->configure(@ENOFF);
         $h->{toplevel}->bind('<Key-space>', undef);
@@ -187,7 +191,6 @@ sub _onpub_attack_info {
         : $nul;
     $h->{labels}{result_1}->configure( -image => $r1 );
     $h->{labels}{result_2}->configure( -image => $r2 );
-
 }
 
 
@@ -683,6 +686,15 @@ sub _onpriv_start {
     $h->{labels}{result_2}  = $r2;
     $h->{labels}{defence_1} = $d1;
     $h->{labels}{defence_2} = $d2;
+
+    #-- redo checkbox
+    $h->{auto_reattack} = 0; # FIXME: from config
+    my $cb_reattack = $fright->Checkbutton(
+        -text     => 'Auto-reattack',
+        -variable => \$h->{auto_reattack},
+        -anchor   => 'w',
+    )->pack(@TOP,@FILLX);
+    $h->{balloon}->attach($cb_reattack, -msg=>'Automatically re-do last attack if attacker still has more than 3 armies');
 
     #-- trap close events
     $top->protocol( WM_DELETE_WINDOW => $s->postback('_window_close') );
