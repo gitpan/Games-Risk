@@ -143,6 +143,9 @@ sub load_file {
     open my $fh, '<', $file; # FIXME: error handling
     my $section = '';
     while ( defined( my $line = <$fh> ) ) {
+        $line =~ s/[\r\n]//g;  # remove all end of lines
+        $line =~ s/^\s+//;     # trim heading whitespaces
+        $line =~ s/\s+$//;     # trim trailing whitespaces
         given ($line) {
             when (/^\s*$/)    { } # empty lines
             when (/^\s*[#;]/) { } # comments
@@ -153,9 +156,6 @@ sub load_file {
             }
 
             # further parsing
-            $line =~ s/[\r\n]//g;  # remove all end of lines
-            $line =~ s/^\s+//;     # trim heading whitespaces
-            $line =~ s/\s+$//;     # trim trailing whitespaces
             my $meth = "_parse_file_section_$section";
             my $rv = $self->$meth($line);
             if ( $rv ) {
@@ -212,7 +212,7 @@ sub _parse_file_section_continents {
     # get continent params
     $id_continent++;
     my ($name, $bonus, undef) = split /\s+/, $line;
-    $name =~ s/-/ /g;
+    $name =~ s/[-_]/ /g;
 
     # create and store continent
     my $continent = Continent->new({id=>$id_continent, name=>$name, bonus=>$bonus});
@@ -226,7 +226,7 @@ sub _parse_file_section_countries {
 
     # get country param
     my ($greyval, $name, $idcont, $x, $y) = split /\s+/, $line;
-    $name =~ s/-/ /g;
+    $name =~ s/[-_]/ /g;
     my $continent = $self->_continents->{$idcont};
     return "continent '$idcont' does not exist" unless defined $continent;
 
