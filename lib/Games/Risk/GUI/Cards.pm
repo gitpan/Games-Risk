@@ -56,6 +56,7 @@ sub spawn {
             card_del             => \&_onpub_card_del,
             place_armies         => \&_onpub_change_button_state,
             shutdown             => \&_onpub_shutdown,
+            visibility_toggle    => \&visibility_toggle,
         },
     );
     return $session->ID;
@@ -147,6 +148,21 @@ sub _onpub_shutdown {
     K->alias_remove('cards');
 }
 
+
+#
+# visibility_toggle();
+#
+# Request window to be hidden / shown depending on its previous state.
+#
+sub visibility_toggle {
+    my ($h) = $_[HEAP];
+
+    my $top = $h->{toplevel};
+    my $method = $top->state eq 'normal' ? 'withdraw' : 'deiconify';
+    $top->$method;
+}
+
+
 # -- private events
 
 #
@@ -217,6 +233,7 @@ sub _onpriv_redraw_cards {
 
     # move window & enforce geometry
     #$top->update;               # force redraw
+    $h->{toplevel}->deiconify;
 
     #$top->resizable(0,0);
     #my ($maxw,$maxh) = $top->geometry =~ /^(\d+)x(\d+)/;
@@ -237,9 +254,10 @@ sub _onpriv_start {
     #-- create gui
 
     my $top = $opts->{parent}->Toplevel;
-    #$top->withdraw;           # window is hidden first
+    $top->withdraw;           # window is hidden first
     $h->{toplevel} = $top;
     $top->title('Cards');
+    $top->iconimage( image('icon-cards') );
 
     #- top label
     $h->{label} = $top->Label(
@@ -273,7 +291,8 @@ sub _onpriv_start {
 
 
     #-- trap some events
-    $top->protocol( WM_DELETE_WINDOW => sub{} );
+    $top->protocol( WM_DELETE_WINDOW => $s->postback('visibility_toggle'));
+    $top->bind('<F5>', $s->postback('visibility_toggle'));
 }
 
 
@@ -407,7 +426,7 @@ armies during reinforcement.
 
 =head2 my $id = Games::Risk::GUI::Cards->spawn( %opts );
 
-Create a window requesting for amies move, and return the associated POE
+Create a window listing player cards, and return the associated POE
 session ID. One can pass the following options:
 
 =over 4
@@ -419,6 +438,7 @@ parameter is mandatory.
 
 
 =back
+
 
 
 =begin quiet_pod_coverage
@@ -436,9 +456,19 @@ The newly created POE session accepts the following events:
 
 =over 4
 
-=item card( $card )
+=item * card_add( $card )
 
 Add C<$card> to the list of cards owned by the player to be shown.
+
+
+=item * card_del( $card )
+
+Remove C<$card> from the list of cards owned by the player to be shown.
+
+
+=item * visibility_toggle()
+
+Request window to be hidden / shown depending on its previous state.
 
 
 =back

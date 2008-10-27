@@ -15,6 +15,7 @@ use warnings;
 
 use Games::Risk::GUI::Cards;
 use Games::Risk::GUI::Constants;
+use Games::Risk::GUI::Continents;
 use Games::Risk::GUI::GameOver;
 use Games::Risk::GUI::MoveArmies;
 use Games::Risk::Resources qw{ image };
@@ -72,6 +73,9 @@ sub spawn {
             _canvas_place_armies           => \&_ongui_canvas_place_armies,
             _canvas_place_armies_initial   => \&_ongui_canvas_place_armies_initial,
             _canvas_motion                 => \&_ongui_canvas_motion,
+            _quit                          => \&_quit,
+            _show_cards                    => \&_show_cards,
+            _show_continents               => \&_show_continents,
             _window_close                  => \&_ongui_window_close,
             # public events
             attack                         => \&_onpub_attack,
@@ -546,6 +550,55 @@ sub _onpriv_start {
     $h->{balloon} = $top->Balloon;
 
 
+    #-- menu
+    $top->optionAdd('*tearOff', 'false'); # no tear-off menus
+    my $menubar = $top->Menu;
+    $top->configure(-menu => $menubar );
+
+    my $game = $menubar->cascade(-label => '~Game');
+    $game->command(
+        -label       => '~Close',
+        -accelerator => 'Ctrl+W',
+        -command     => $s->postback('_window_close'),
+        -image       => image('fileclose16'),
+        -compound    => 'left',
+    );
+    $top->bind('<Control-w>', $s->postback('_window_close'));
+    $top->bind('<Control-W>', $s->postback('_window_close'));
+
+    $game->command(
+        -label       => '~Quit',
+        -accelerator => 'Ctrl+Q',
+        -command     => $s->postback('_quit'),
+        -image       => image('actexit16'),
+        -compound    => 'left',
+    );
+    $top->bind('<Control-q>', $s->postback('_quit'));
+    $top->bind('<Control-Q>', $s->postback('_quit'));
+
+    my $view = $menubar->cascade(-label => '~View');
+    $view->command(
+        -label       => '~Cards',
+        -accelerator => 'F5',
+        -command     => $s->postback('_show_cards'),
+        -image       => image('icon-cards'),
+        -compound    => 'left',
+    );
+    $top->bind('<F5>', $s->postback('_show_cards'));
+    $view->command(
+        -label       => 'C~ontinents',
+        -accelerator => 'F6',
+        -command     => $s->postback('_show_continents'),
+        -image       => image('icon-continents'),
+        -compound    => 'left',
+    );
+    $top->bind('<F6>', $s->postback('_show_continents'));
+
+
+
+    #$h->{menu}{view} = $menubar->entrycget(1, '-menu');
+
+
     #-- main frames
     my $fleft  = $top->Frame->pack(@LEFT,  @XFILL2);
     my $fright = $top->Frame->pack(@RIGHT, @FILL2);
@@ -678,6 +731,7 @@ sub _onpriv_start {
 
     #-- other window
     Games::Risk::GUI::Cards->spawn({parent=>$top});
+    Games::Risk::GUI::Continents->spawn({parent=>$top});
     Games::Risk::GUI::MoveArmies->spawn({parent=>$top});
 
     #-- say that we're done
@@ -1150,6 +1204,38 @@ sub _ongui_canvas_place_armies_initial {
     # ask us to redraw the country.
     K->post('risk', 'initial_armies_placed', $country, 1);
 }
+
+
+#
+# _quit()
+#
+# request whole game to be shut down.
+#
+sub _quit {
+    # FIXME: cleaner way of exiting?
+    exit;
+}
+
+
+#
+# _show_cards()
+#
+# request card window to be shown/hidden.
+#
+sub _show_cards {
+    K->post('cards', 'visibility_toggle');
+}
+
+
+#
+# _show_continents()
+#
+# request continents window to be shown/hidden.
+#
+sub _show_continents {
+    K->post('continents', 'visibility_toggle');
+}
+
 
 #
 # event: _window_close()

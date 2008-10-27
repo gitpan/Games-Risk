@@ -10,6 +10,7 @@ lib/Games/Risk/GUI.pm
 lib/Games/Risk/GUI/Board.pm
 lib/Games/Risk/GUI/Cards.pm
 lib/Games/Risk/GUI/Constants.pm
+lib/Games/Risk/GUI/Continents.pm
 lib/Games/Risk/GUI/GameOver.pm
 lib/Games/Risk/GUI/MoveArmies.pm
 lib/Games/Risk/GUI/Startup.pm
@@ -32,6 +33,8 @@ lib/Games/Risk/resources/images/dice-4.png
 lib/Games/Risk/resources/images/dice-5.png
 lib/Games/Risk/resources/images/dice-6.png
 lib/Games/Risk/resources/images/empty16.png
+lib/Games/Risk/resources/images/icon-cards.png
+lib/Games/Risk/resources/images/icon-continents.png
 lib/Games/Risk/resources/images/paintbrush.png
 lib/Games/Risk/resources/images/player-active.png
 lib/Games/Risk/resources/images/player-lost.png
