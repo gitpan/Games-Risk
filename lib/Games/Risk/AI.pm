@@ -14,12 +14,11 @@ use strict;
 use warnings;
 
 use Carp;
-use Games::Risk;
 use List::Util qw{ shuffle };
 use POE;
 use Readonly;
 
-use aliased 'POE::Kernel' => 'K';
+use constant K => $poe_kernel;
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ game player } );
@@ -380,15 +379,15 @@ Check if ai can trade some C<@cards> for armies.
 =item * my @moves = $ai->move_armies()
 
 Return a list of C<[ $src, $dst, $nb ]> tuples (two
-C<Games::Risk::Map::Country> and an integer), each defining a move of
+C<Games::Risk::Country> and an integer), each defining a move of
 C<$nb> armies from $dst to C<$src>.
 
 
 =item * my @where = $ai->place_armies($nb, [$continent])
 
-Return a list of C<[ $country, $nb ]> tuples (a C<Games::Risk::Map::Country>
+Return a list of C<[ $country, $nb ]> tuples (a C<Games::Risk::Country>
 and an integer) defining where to place C<$nb> armies. If C<$continent> (a
-C<Games::Risk::Map::Continent>) is defined, all the returned C<$countries>
+C<Games::Risk::Continent>) is defined, all the returned C<$countries>
 should be within this continent.
 
 
@@ -396,13 +395,6 @@ should be within this continent.
 
 Note that some of those methods may be inherited from the base class, when it
 provide sane defaults.
-
-
-=begin quiet_pod_coverage
-
-=item * K
-
-=end quiet_pod_coverage
 
 
 

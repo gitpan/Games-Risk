@@ -13,12 +13,11 @@ use 5.010;
 use strict;
 use warnings;
 
-use Games::Risk;
 use Games::Risk::GUI::Constants;
 use Games::Risk::Resources qw{ image };
 use POE;
 
-use aliased 'POE::Kernel' => 'K';
+use constant K => $poe_kernel;
 
 
 #--
@@ -189,14 +188,6 @@ Request window to be hidden / shown depending on its previous state.
 =back
 
 
-
-
-
-=begin quiet_pod_coverage
-
-=item * K
-
-=end quiet_pod_coverage
 
 
 

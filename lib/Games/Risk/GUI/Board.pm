@@ -13,13 +13,14 @@ use 5.010;
 use strict;
 use warnings;
 
+use File::Temp;
 use Games::Risk::GUI::Cards;
 use Games::Risk::GUI::Constants;
 use Games::Risk::GUI::Continents;
 use Games::Risk::GUI::GameOver;
 use Games::Risk::GUI::MoveArmies;
 use Games::Risk::Resources qw{ image };
-use Image::Resize;
+use Image::Imlib2;
 use Image::Size;
 use List::Util     qw{ min };
 use MIME::Base64;
@@ -30,7 +31,7 @@ use Tk::Balloon;
 use Tk::JPEG;
 use Tk::PNG;
 
-use aliased 'POE::Kernel' => 'K';
+use constant K => $poe_kernel;
 
 Readonly my $WAIT_CLEAN_AI    => 1.000;
 Readonly my $WAIT_CLEAN_HUMAN => 0.250;
@@ -485,7 +486,7 @@ sub _onpub_player_add {
     $h->{labels}{players}{ $player->name } = $label;
 
     # associate tooltip
-    my $tooltip = $player->name // '';
+    my $tooltip = $player->name // ''; # FIXME: padre syntax hilight gone wrong /
     given ($player->type) {
         when ('human') {
             $tooltip .= ' (human)';
@@ -981,11 +982,14 @@ sub _ongui_canvas_configure {
     my ($c, $neww, $newh) = @$args;
 
     # create a new image resized to fit new dims
-    my $orig = Image::Resize->new($h->{map}->background);
-    my $gd   = $orig->resize($neww, $newh, 0);
+    my $orig   = Image::Imlib2->load( $h->{map}->background );
+    my $scaled = $orig->create_scaled_image( $neww, $newh );
+    $scaled->image_set_format('jpeg');
+    my $tmpfile = File::Temp->new( UNLINK => 1, SUFFIX => '.jpg' )->filename;
+    $scaled->save($tmpfile);
 
     # install this new image inplace of previous background
-    my $img = $c->Photo( -data => encode_base64($gd->jpeg) );
+    my $img = $c->Photo( -file => $tmpfile );
     $c->delete('background');
     $c->createImage(0, 0, -anchor=>'nw', -image=>$img, -tags=>['background']);
     $c->lower('background', 'all');
@@ -1069,7 +1073,7 @@ sub _ongui_canvas_move_armies_from {
     return unless defined $country;
     my $id = $country->id;
     return if $country->owner->name ne $curplayer->name; # country owner
-    return if $country->armies - ($h->{fake_armies_out}{$id}//0) == 1;
+    return if $country->armies - ($h->{fake_armies_out}{$id}//0) == 1; # FIXME: padre syntax hilight gone wrong /
 
     # record move source
     $h->{src} = $country;
@@ -1111,7 +1115,7 @@ sub _ongui_canvas_move_armies_target {
 
     # request user how many armies to move
     my $src = $h->{src};
-    my $max = $src->armies - 1 - ($h->{fake_armies_out}{ $src->id }//0);
+    my $max = $src->armies - 1 - ($h->{fake_armies_out}{ $src->id }//0); # FIXME: padre syntax hilight gone wrong /
     K->post('move-armies', 'ask_move_armies', $h->{src}, $country, $max);
 }
 
@@ -1134,7 +1138,7 @@ sub _ongui_canvas_place_armies {
 
     # checks...
     return if $country->owner->name ne $curplayer->name; # country owner
-    return if $diff + ($h->{fake_armies_in}{$id}//0) < 0;   # negative count (free army move! :-) )
+    return if $diff + ($h->{fake_armies_in}{$id}//0) < 0;   # negative count (free army move! :-) ) # FIXME: padre syntax hilight gone wrong /
 
     # update armies count
     my $name = $country->continent->name;
@@ -1290,13 +1294,6 @@ the GUI. It features a map and various controls to drive the action.
 
 =head2 my $id = Games::Risk::GUI::Board->spawn( )
 
-
-
-=begin quiet_pod_coverage
-
-=item * K
-
-=end quiet_pod_coverage
 
 
 

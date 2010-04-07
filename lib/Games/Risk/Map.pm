@@ -16,9 +16,9 @@ use warnings;
 use File::Basename qw{ fileparse };
 use List::Util      qw{ shuffle };
 use List::MoreUtils qw{ uniq };
-use aliased 'Games::Risk::Map::Card';
-use aliased 'Games::Risk::Map::Continent';
-use aliased 'Games::Risk::Map::Country';
+use aliased 'Games::Risk::Card';
+use aliased 'Games::Risk::Continent';
+use aliased 'Games::Risk::Country';
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ background _cards greyscale _continents _countries _dirname } );
