@@ -1,21 +1,25 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
 
+package Games::Risk::GUI;
+BEGIN {
+  $Games::Risk::GUI::VERSION = '3.101110';
+}
+# ABSTRACT: gui multiplexer poe session
+
 use Games::Risk::GUI::Board;
 use Games::Risk::GUI::Startup;
-use POE;
+use POE qw{ Loop::Tk };
 
 use constant K => $poe_kernel;
 
@@ -25,7 +29,7 @@ use constant K => $poe_kernel;
 # -- public methods
 
 sub spawn {
-    my ($type, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -84,21 +88,21 @@ sub _onpriv_start {
 
 1;
 
-__END__
 
 
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI - gui multiplexer poe session
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $id = Games::Risk::GUI->spawn(\%params);
-
-
 
 =head1 DESCRIPTION
 
@@ -118,8 +122,6 @@ C<Games::Risk::GUI> session.
 This poe session will have various aliases: the player's name, the
 player object stringified, and finally the alias C<gui>.
 
-
-
 =head1 METHODS
 
 =head2 my $id = Games::Risk->spawn( \%params )
@@ -131,7 +133,6 @@ It will return the poe id of the session newly created.
 
 You can tune the session by passing some arguments as a hash reference:
 
-
 =over 4
 
 =item * player => $player
@@ -140,23 +141,15 @@ The human C<$player> that will control the GUI.
 
 =back
 
-
-
 =head1 EVENTS RECEIVED
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -165,5 +158,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

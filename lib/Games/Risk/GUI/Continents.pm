@@ -1,21 +1,25 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::Continents;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
 
+package Games::Risk::GUI::Continents;
+BEGIN {
+  $Games::Risk::GUI::Continents::VERSION = '3.101110';
+}
+# ABSTRACT: continents listing
+
 use Games::Risk::GUI::Constants;
 use Games::Risk::Resources qw{ image };
-use POE;
+use POE                    qw{ Loop::Tk };
 
 use constant K => $poe_kernel;
 
@@ -30,7 +34,7 @@ use constant K => $poe_kernel;
 # refer to the embedded pod for an explanation of the supported options.
 #
 sub spawn {
-    my ($class, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -58,7 +62,7 @@ sub spawn {
 # kill current session. the toplevel window has already been destroyed.
 #
 sub shutdown {
-    my $h = $_[HEAP];
+    #my $h = $_[HEAP];
     K->alias_remove('continents');
 }
 
@@ -106,7 +110,6 @@ sub _start {
         }
         $map->continents;
     my $row = 0;
-    my @opts = qw{ -anchor w };
     foreach my $c ( @continents ) {
         $top->Label(-text=>$c->name
         )->grid(-row=>$row,-column=>0,-sticky=>'w');
@@ -126,30 +129,28 @@ sub _start {
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::Continents - continents listing
 
+=head1 VERSION
 
-
-=head1 SYNOPSYS
-
-    my $id = Games::Risk::GUI::Continents->spawn(%opts);
-
-
+version 3.101110
 
 =head1 DESCRIPTION
 
 C<GR::GUI::Continents> implements a POE session, creating a Tk window to
 list the continents of the map and their associated bonus.
 
+=head1 SYNOPSYS
 
+    my $id = Games::Risk::GUI::Continents->spawn(%opts);
 
 =head1 CLASS METHODS
-
 
 =head2 my $id = Games::Risk::GUI::Continents->spawn( %opts );
 
@@ -163,15 +164,11 @@ session ID. One can pass the following options:
 A Tk window that will be the parent of the toplevel window created. This
 parameter is mandatory.
 
-
 =back
-
-
 
 =head1 PUBLIC EVENTS
 
 The newly created POE session accepts the following events:
-
 
 =over 4
 
@@ -179,29 +176,19 @@ The newly created POE session accepts the following events:
 
 Kill current session. the toplevel window has already been destroyed.
 
-
 =item * visibility_toggle()
 
 Request window to be hidden / shown depending on its previous state.
 
-
 =back
-
-
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -210,5 +197,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

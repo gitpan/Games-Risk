@@ -1,17 +1,21 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::AI::Hegemon;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::AI::Hegemon;
+BEGIN {
+  $Games::Risk::AI::Hegemon::VERSION = '3.101110';
+}
+# ABSTRACT: ai that tries to conquer the world
 
 use List::MoreUtils qw{ all };
 
@@ -191,7 +195,7 @@ sub attack {
 # $dst.
 #
 sub attack_move {
-    my ($self, $src, $dst, $min) = @_;
+    my ($self, $src) = @_;
 
     my $nbsrc = $src->armies;
     my $max   = $nbsrc - 1;
@@ -227,7 +231,7 @@ sub difficulty { return 'hard' }
 #
 sub move_armies {
     my ($self) = @_;
-    my $me = $self->player;
+    #my $me = $self->player;
 
     my @where;
     # move all armies from countries enclosed within other countries
@@ -255,7 +259,7 @@ sub move_armies {
 # heuristics, maximizing the chances of the ai to win.
 #
 sub place_armies {
-    my ($self, $nb, $continent) = @_;
+    my ($self, $nb) = @_;
 
     # FIXME: restrict to continent if strict placing
     #my @countries = defined $continent
@@ -534,21 +538,21 @@ sub _short_path_to_continent {
 
 1;
 
-__END__
 
 
+=pod
 
 =head1 NAME
 
 Games::Risk::AI::Hegemon - ai that tries to conquer the world
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $ai = Games::Risk::AI::Hegemon->new(\%params);
-
-
 
 =head1 DESCRIPTION
 
@@ -556,13 +560,10 @@ This artificial intelligence is optimized to conquer the world.  It
 checks what countries are most valuable for it, optimizes attacks and
 moves for continent bonus and blocking other players.
 
-
-
 =head1 METHODS
 
 This class implements (or inherits) all of those methods (further described in
 C<Games::Risk::AI>):
-
 
 =over 4
 
@@ -580,25 +581,17 @@ C<Games::Risk::AI>):
 
 =back
 
-
-
 =head1 ACKNOWLEDGEMENTS
 
 This AI is freely adapted from jRisk.
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk::AI>, L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -607,5 +600,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

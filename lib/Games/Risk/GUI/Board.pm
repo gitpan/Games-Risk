@@ -1,17 +1,21 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::Board;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::GUI::Board;
+BEGIN {
+  $Games::Risk::GUI::Board::VERSION = '3.101110';
+}
+# ABSTRACT: board gui component
 
 use File::Temp;
 use Games::Risk::GUI::Cards;
@@ -24,7 +28,7 @@ use Image::Imlib2;
 use Image::Size;
 use List::Util     qw{ min };
 use MIME::Base64;
-use POE;
+use POE            qw{ Loop::Tk };
 use Readonly;
 use Tk;
 use Tk::Balloon;
@@ -47,7 +51,7 @@ Readonly my $WAIT_CLEAN_HUMAN => 0.250;
 # to the embedded pod for an explanation of the supported options.
 #
 sub spawn {
-    my ($type, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -146,7 +150,7 @@ sub _onpub_attack {
 # Give the result of $dst attack from $src: @attack and @defence dices
 #
 sub _onpub_attack_info {
-    my ($h, $src, $dst, $attack, $defence, $loss_src, $loss_dst) = @_[HEAP, ARG0..$#_];
+    my ($h, $src, $dst, $attack, $defence) = @_[HEAP, ARG0..$#_];
 
     # update status msg
     $h->{status} = 'Attacking ' . $dst->name . ' from ' . $src->name;
@@ -177,7 +181,7 @@ sub _onpub_attack_info {
         -width => 4,
     );
     my $srcid = $src->id;
-    my $dstid = $dst->id;
+    #my $dstid = $dst->id;
     $c->raise('attack', 'all');
     $c->raise("country$srcid", 'attack');
     $c->idletasks;
@@ -1267,40 +1271,34 @@ sub _ongui_window_close {
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::Board - board gui component
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $id = Games::Risk::GUI::Board->spawn(\%params);
-
-
 
 =head1 DESCRIPTION
 
 This class implements a poe session responsible for the board part of
 the GUI. It features a map and various controls to drive the action.
 
-
-
 =head1 METHODS
 
-
 =head2 my $id = Games::Risk::GUI::Board->spawn( )
-
-
-
 
 =head1 EVENTS
 
 =head2 Events received
-
 
 =over 4
 
@@ -1308,22 +1306,15 @@ the GUI. It features a map and various controls to drive the action.
 
 Force C<$country> to be redrawn: owner and number of armies.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -1332,5 +1323,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

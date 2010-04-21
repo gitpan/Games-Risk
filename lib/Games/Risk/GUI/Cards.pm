@@ -1,22 +1,26 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::Cards;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
 
+package Games::Risk::GUI::Cards;
+BEGIN {
+  $Games::Risk::GUI::Cards::VERSION = '3.101110';
+}
+# ABSTRACT: cards listing
+
 use Games::Risk::GUI::Constants;
 use Games::Risk::Resources qw{ image };
 use List::MoreUtils qw{ any firstidx };
-use POE;
+use POE             qw{ Loop::Tk };
 use Readonly;
 use Tk::Pane;
 
@@ -36,7 +40,7 @@ Readonly my $HEIGHT => 145;
 # embedded pod for an explanation of the supported options.
 #
 sub spawn {
-    my ($class, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -144,7 +148,7 @@ sub _onpub_change_button_state {
 # kill current session. the toplevel window has already been destroyed.
 #
 sub _onpub_shutdown {
-    my $h = $_[HEAP];
+    #my $h = $_[HEAP];
     K->alias_remove('cards');
 }
 
@@ -322,7 +326,7 @@ sub _ongui_but_exchange {
 #
 sub _ongui_card_clicked {
     my ($h, $args) = @_[HEAP, ARG1];
-    my ($canvas, $card) = @$args;
+    my ($canvas, undef) = @$args;
 
     # get the lists
     my @cards    = @{ $h->{cards} };
@@ -397,21 +401,17 @@ sub _onpriv_slide_wheel {
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::Cards - cards listing
 
+=head1 VERSION
 
-
-=head1 SYNOPSYS
-
-    my $id = Games::Risk::GUI::Cards->spawn(%opts);
-    Poe::Kernel->post( $id, 'card', $card );
-
-
+version 3.101110
 
 =head1 DESCRIPTION
 
@@ -419,10 +419,12 @@ C<GR::GUI::Cards> implements a POE session, creating a Tk window to
 list the cards the player got. It can be used to exchange cards with new
 armies during reinforcement.
 
+=head1 SYNOPSYS
 
+    my $id = Games::Risk::GUI::Cards->spawn(%opts);
+    Poe::Kernel->post( $id, 'card', $card );
 
 =head1 CLASS METHODS
-
 
 =head2 my $id = Games::Risk::GUI::Cards->spawn( %opts );
 
@@ -436,15 +438,11 @@ session ID. One can pass the following options:
 A Tk window that will be the parent of the toplevel window created. This
 parameter is mandatory.
 
-
 =back
-
-
 
 =head1 PUBLIC EVENTS
 
 The newly created POE session accepts the following events:
-
 
 =over 4
 
@@ -452,32 +450,23 @@ The newly created POE session accepts the following events:
 
 Add C<$card> to the list of cards owned by the player to be shown.
 
-
 =item * card_del( $card )
 
 Remove C<$card> from the list of cards owned by the player to be shown.
-
 
 =item * visibility_toggle()
 
 Request window to be hidden / shown depending on its previous state.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -486,5 +475,23 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
+
 

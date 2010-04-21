@@ -1,21 +1,25 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::MoveArmies;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
 
+package Games::Risk::GUI::MoveArmies;
+BEGIN {
+  $Games::Risk::GUI::MoveArmies::VERSION = '3.101110';
+}
+# ABSTRACT: window to move armies
+
 use Games::Risk::GUI::Constants;
 use List::Util qw{ max };
-use POE;
+use POE        qw{ Loop::Tk };
 use Tk;
 use Tk::Font;
 
@@ -32,7 +36,7 @@ use constant K => $poe_kernel;
 # embedded pod for an explanation of the supported options.
 #
 sub spawn {
-    my ($class, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -146,7 +150,7 @@ sub _onpub_ask_move_armies {
 # kill current session. the toplevel window has already been destroyed.
 #
 sub _onpub_shutdown {
-    my $h = $_[HEAP];
+    #my $h = $_[HEAP];
     K->alias_remove('move-armies');
 }
 
@@ -234,22 +238,17 @@ sub _onpriv_slide_wheel {
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::MoveArmies - window to move armies
 
+=head1 VERSION
 
-
-=head1 SYNOPSYS
-
-    my $id = Games::Risk::GUI::MoveArmies->spawn(%opts);
-    Poe::Kernel->post( $id, 'attack_move', $src, $dst, $min );
-    Poe::Kernel->post( $id, 'move_armies', $src, $dst, $max );
-
-
+version 3.101110
 
 =head1 DESCRIPTION
 
@@ -257,10 +256,13 @@ C<GR::GUI::MoveArmies> implements a POE session, creating a Tk window to
 ask the number of armies to move between adjacent countries. Once used,
 the window is hidden to be reused later on.
 
+=head1 SYNOPSYS
 
+    my $id = Games::Risk::GUI::MoveArmies->spawn(%opts);
+    Poe::Kernel->post( $id, 'attack_move', $src, $dst, $min );
+    Poe::Kernel->post( $id, 'move_armies', $src, $dst, $max );
 
 =head1 CLASS METHODS
-
 
 =head2 my $id = Games::Risk::GUI::MoveArmies->spawn( %opts );
 
@@ -274,16 +276,11 @@ session ID. One can pass the following options:
 A Tk window that will be the parent of the toplevel window created. This
 parameter is mandatory.
 
-
 =back
-
-
-
 
 =head1 PUBLIC EVENTS
 
 The newly created POE session accepts the following events:
-
 
 =over 4
 
@@ -293,22 +290,15 @@ Show window and request how many armies to move from C<$src> to C<$dst>.
 This number should be at least C<$min>, matching the number of dices
 used for attack.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -317,5 +307,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

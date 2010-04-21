@@ -1,4 +1,13 @@
 #!/usr/bin/perl
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 #
 # This file is part of Games::Risk.
 # Copyright (c) 2008 Jerome Quelin, all rights reserved.

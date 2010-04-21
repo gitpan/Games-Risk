@@ -1,23 +1,27 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::Controller;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::Controller;
+BEGIN {
+  $Games::Risk::Controller::VERSION = '3.101110';
+}
+# ABSTRACT: controller poe session for risk
 
 use Games::Risk::Map;
 use Games::Risk::Player;
 use Games::Risk::Resources qw{ map_path };
 use List::Util      qw{ min shuffle };
-use POE;
+use POE             qw{ Loop::Tk };
 use Readonly;
 use constant K => $poe_kernel;
 
@@ -45,7 +49,7 @@ Readonly my $START_ARMIES      => 5;
 # Currently, no params can be tuned.
 #
 sub spawn {
-    my ($type, $game) = @_;
+    my (undef, $game) = @_;
 
     my $session = POE::Session->create(
         heap          => $game,
@@ -98,7 +102,7 @@ sub spawn {
 # fired when player has finished moved armies at the end of the turn.
 #
 sub _onpub_armies_moved {
-    my $h = $_[HEAP];
+    #my $h = $_[HEAP];
 
     # FIXME: check player is curplayer
     K->delay_set( '_armies_moved' => $WAIT );
@@ -610,7 +614,7 @@ sub _onpriv_place_armies {
     $h->send_to_one($player, 'place_armies', $nb);
 
     # continent bonus
-    my $bonus = 0;
+    #my $bonus = 0;
     foreach my $c( $h->map->continents ) {
         next unless $c->is_owned($player);
 
@@ -732,28 +736,27 @@ sub _onpriv_start {
 
 
 1;
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::Controller - controller poe session for risk
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     use Games::Risk::Controller;
     Games::Risk::Controller->spawn;
 
-
-
 =head1 DESCRIPTION
 
 This module implements a poe session, responsible for the state tracking
 as well as rule enforcement of the game.
-
-
 
 =head1 PUBLIC METHODS
 
@@ -765,20 +768,13 @@ game. It will return the poe id of the session newly created.
 You can tune the session by passing some arguments as a hash reference.
 Currently, no params can be tuned.
 
-
-
-
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -787,6 +783,23 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
 
 =cut
+
+
+__END__
+
+
+
 

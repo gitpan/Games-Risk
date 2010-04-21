@@ -1,17 +1,21 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::Continent;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::Continent;
+BEGIN {
+  $Games::Risk::Continent::VERSION = '3.101110';
+}
+# ABSTRACT: continent object
 
 use List::MoreUtils qw{ all };
 
@@ -74,32 +78,29 @@ sub is_owned {
 
 1;
 
-__END__
 
 
+=pod
 
 =head1 NAME
 
 Games::Risk::Continent - continent object
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $id = Games::Risk::Continent->new(\%params);
 
-
-
 =head1 DESCRIPTION
 
 This module implements a map continent, with all its characteristics.
 
-
-
 =head1 METHODS
 
 =head2 Constructor
-
 
 =over 4
 
@@ -108,15 +109,12 @@ This module implements a map continent, with all its characteristics.
 Create a new continent. Mandatory params are C<id>, C<name> and C<bonus>
 (see below in C<Accessors> for a quick definition).
 
-
 =back
-
 
 =head2 Accessors
 
 The following accessors (acting as mutators, ie getters and setters) are
 available for C<Games::Risk::Continent> objects:
-
 
 =over 4
 
@@ -125,18 +123,15 @@ available for C<Games::Risk::Continent> objects:
 number of bonus armies given when a player controls every country in the
 continent.
 
-
 =item * id()
 
 unique id assigned to the continent.
-
 
 =item * name()
 
 continent name.
 
 =back
-
 
 =head2 Public methods
 
@@ -147,37 +142,27 @@ continent name.
 Store C<$country> (a C<Games::Risk::Country> object) as a country
 located within the C<$continent>.
 
-
 =item * $continent->destroy()
 
 Remove all circular references of C<$continent>, to prevent memory leaks.
-
 
 =item * my @countries = $continent->countries()
 
 Return the list of countries located in C<$continent>.
 
-
 =item * my $p0wned = $continent->is_owned( $player )
 
 Return true if C<$player> is the owner of all C<$continent>'s countries.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -186,5 +171,23 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
+
 

@@ -1,25 +1,30 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::Resources;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
 
-use File::Basename qw{ basename fileparse };
+package Games::Risk::Resources;
+BEGIN {
+  $Games::Risk::Resources::VERSION = '3.101110';
+}
+# ABSTRACT: utility module to load bundled resources
+
+use File::Basename qw{ basename };
+use File::ShareDir qw{ dist_dir };
 use File::Spec::Functions;
-use Module::Util   qw{ find_installed };
+use POE qw{ Loop::Tk };
 use Tk;
 use Tk::JPEG;
 use Tk::PNG;
-use POE;
+
 
 use base qw{ Exporter };
 our @EXPORT_OK = qw{ image map_path maps };
@@ -58,7 +63,8 @@ sub map_path {
 # return the names of all the maps bundled with GR.
 #
 sub maps {
-    return sort keys %maps;
+    my @maps = sort keys %maps;
+    return @maps;
 }
 
 
@@ -74,18 +80,6 @@ sub _find_maps {
 
     my $glob = catfile($dirname, 'maps', '*.map');
     %maps = map { ( basename($_,qw{.map}) => $_ ) } glob $glob;
-}
-
-
-#
-# my $path = _find_resources_path();
-#
-# return the absolute path where all resources will be placed.
-#
-sub _find_resources_path {
-    my $path = find_installed(__PACKAGE__);
-    my (undef, $dirname, undef) = fileparse($path);
-    return catfile($dirname, 'resources');
 }
 
 
@@ -130,7 +124,7 @@ sub _load_tk_icons {
 # INITIALIZATION
 
 BEGIN {
-    my $dirname = _find_resources_path();
+    my $dirname = dist_dir('Games-Risk');
     _load_tk_icons($dirname);
     _load_images($dirname);
     _find_maps($dirname);
@@ -139,22 +133,22 @@ BEGIN {
 
 1;
 
-__END__
 
 
+=pod
 
 =head1 NAME
 
 Games::Risk::Resources - utility module to load bundled resources
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     use Games::Risk::Resources qw{ image };
     my $image = image('actexit16');
-
-
 
 =head1 DESCRIPTION
 
@@ -165,20 +159,16 @@ mechanism, this package provides handy functions to do that.
 Moreover, by loading all the images at the same location, it will ensure
 that they are not loaded twice, cutting memory eating.
 
-
-
 =head1 SUBROUTINES
 
 C<Games::Risk::Resources> deals with various resources bundled within
 the distribution. It doesn't export anything by default, but the
 following subs are available for your import pleasure.
 
-
 =head2 Image resources
 
 The images used for the GUI are bundled and loaded as C<Tk::Photo> of
 C<$poe_main_window>.
-
 
 =over 4
 
@@ -186,15 +176,11 @@ C<$poe_main_window>.
 
 Return the Tk image called C<$name>. It can be directly used within Tk.
 
-
 =back
-
-
 
 =head2 Map resources
 
 Map resources are playable maps, to allow more playing fun.
-
 
 =over 4
 
@@ -202,27 +188,19 @@ Map resources are playable maps, to allow more playing fun.
 
 Return the absolute path of the map C<$name>.
 
-
 =item my @names = maps( )
 
 Return the names of all the maps bundled with C<Games::Risk>.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -231,5 +209,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

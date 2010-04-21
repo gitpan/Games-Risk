@@ -1,17 +1,21 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::Card;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::Card;
+BEGIN {
+  $Games::Risk::Card::VERSION = '3.101110';
+}
+# ABSTRACT: map card
 
 use base qw{ Class::Accessor::Fast };
 __PACKAGE__->mk_accessors( qw{ country type } );
@@ -38,32 +42,29 @@ sub destroy {
 
 1;
 
-__END__
 
 
+=pod
 
 =head1 NAME
 
 Games::Risk::Card - map card
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $card = Games::Risk::Card->new(\%params);
 
-
-
 =head1 DESCRIPTION
 
 This module implements a map card, with all its characteristics.
 
-
-
 =head1 METHODS
 
 =head2 Constructor
-
 
 =over 4
 
@@ -72,15 +73,12 @@ This module implements a map card, with all its characteristics.
 Create a new card. Mandatory param is C<type>, and there's an optional
 param C<country>.
 
-
 =back
-
 
 =head2 Accessors
 
 The following accessors (acting as mutators, ie getters and setters) are
 available for C<Games::Risk::Card> objects:
-
 
 =over 4
 
@@ -88,15 +86,12 @@ available for C<Games::Risk::Card> objects:
 
 country corresponding to the card.
 
-
 =item * type()
 
 the type of the card: C<artillery>, C<cavalry>, C<infantery> or
 C<wildcard>
 
-
 =back
-
 
 =head2 Methods
 
@@ -106,22 +101,15 @@ C<wildcard>
 
 Remove all circular references of C<$card>, to prevent memory leaks.
 
-
 =back
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -130,5 +118,22 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
 

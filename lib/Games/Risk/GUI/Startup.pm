@@ -1,23 +1,27 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::Startup;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
 use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::GUI::Startup;
+BEGIN {
+  $Games::Risk::GUI::Startup::VERSION = '3.101110';
+}
+# ABSTRACT: startup window
 
 use Games::Risk::GUI::Constants;
 use Games::Risk::Resources qw{ image maps };
 use List::Util     qw{ shuffle };
 use List::MoreUtils qw{ any };
-use POE;
+use POE             qw{ Loop::Tk };
 use Readonly;
 use Tk;
 use Tk::Balloon;
@@ -72,7 +76,7 @@ Readonly my @NAMES => (
 # to the embedded pod for an explanation of the supported options.
 #
 sub spawn {
-    my ($type, $args) = @_;
+    my (undef, $args) = @_;
 
     my $session = POE::Session->create(
         args          => [ $args ],
@@ -203,8 +207,6 @@ sub _onpriv_check_nb_players {
 # last choices (saved in a config file somewhere).
 #
 sub _onpriv_load_defaults {
-    my ($h, $s) = @_[HEAP, SESSION];
-
     # FIXME: hardcoded
     my @names  = ($ENV{USER}, shuffle @NAMES );
     my @types  = ('Human', ('Computer, easy')x1, ('Computer, hard')x2);
@@ -237,7 +239,7 @@ sub _onpriv_new_player {
     my $f = $fpl->Frame(-bg=>$color)->pack(@LEFT, @FILLX);
     $players->[$num]{line}  = $fpl;
     $players->[$num]{frame} = $f;
-    my $e = $f->Entry(
+    $f->Entry(
         -textvariable => \$players->[$num]{name},
         -validate     => 'all',
         -vcmd         => sub { $s->postback('_check_errors')->(); 1; },
@@ -307,7 +309,7 @@ sub _onpriv_start {
 
     #-- title
     my $font = $top->Font(-size=>16);
-    my $title = $top->Label(
+    $top->Label(
         -bg   => 'black',
         -fg   => 'white',
         -font => $font,
@@ -324,7 +326,7 @@ sub _onpriv_start {
     $h->{map} = 'risk';
     my $fmap = $top->Frame->pack(@TOP, @XFILL2, @PAD20);
     $fmap->Label(-text=>'Map', -anchor=>'w')->pack(@TOP, @FILLX);
-    my $be = $fmap->BrowseEntry(
+    $fmap->BrowseEntry(
         -variable           => \$h->{map},
         -listheight         => scalar(@choices)+1,
         -choices            => \@choices,
@@ -409,7 +411,7 @@ sub _ongui_but_color {
 # called when button to delete player number $num has been clicked.
 #
 sub _ongui_but_delete {
-    my ($h, $s, $args) = @_[HEAP, SESSION, ARG0];
+    my ($h, $args) = @_[HEAP, ARG0];
 
     # remove player
     my ($num) = @$args;
@@ -492,47 +494,38 @@ sub _ongui_but_start {
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::Startup - startup window
 
+=head1 VERSION
 
+version 3.101110
 
 =head1 SYNOPSIS
 
     my $id = Games::Risk::GUI::Startup->spawn(\%params);
-
-
 
 =head1 DESCRIPTION
 
 This class implements a poe session responsible for the startup window
 of the GUI. It allows to design the new game to be played.
 
-
-
 =head1 METHODS
 
-
 =head2 my $id = Games::Risk::GUI::Startup->spawn( )
-
-
-
 
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -541,5 +534,23 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
+
 

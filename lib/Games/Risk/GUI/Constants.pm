@@ -1,16 +1,21 @@
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
-
-package Games::Risk::GUI::Constants;
-
+# 
+# This file is part of Games-Risk
+# 
+# This software is Copyright (c) 2008 by Jerome Quelin.
+# 
+# This is free software, licensed under:
+# 
+#   The GNU General Public License, Version 3, June 2007
+# 
+use 5.010;
 use strict;
 use warnings;
+
+package Games::Risk::GUI::Constants;
+BEGIN {
+  $Games::Risk::GUI::Constants::VERSION = '3.101110';
+}
+# ABSTRACT: tk constants
 
 use base qw{ Exporter };
 
@@ -46,21 +51,17 @@ our @ENOFF   = ( -state => 'disabled' );
 
 1;
 
-__END__
 
+
+=pod
 
 =head1 NAME
 
 Games::Risk::GUI::Constants - tk constants
 
+=head1 VERSION
 
-
-=head1 SYNOPSYS
-
-    use Games::Risk::GUI::Constants;
-    $mw->Frame->pack(@LEFT);
-
-
+version 3.101110
 
 =head1 DESCRIPTION
 
@@ -70,19 +71,18 @@ it's easier to use those constants.
 
 Other than that, the module does nothing.
 
+=head1 SYNOPSYS
 
+    use Games::Risk::GUI::Constants;
+    $mw->Frame->pack(@LEFT);
 
 =head1 SEE ALSO
 
 L<Games::Risk>, L<Tk>.
 
-
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-
 
 =head1 COPYRIGHT & LICENSE
 
@@ -91,5 +91,23 @@ Copyright (c) 2008 Jerome Quelin, all rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU GPLv3+.
 
+=head1 AUTHOR
+
+  Jerome Quelin
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2008 by Jerome Quelin.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 3, June 2007
+
 =cut
+
+
+__END__
+
+
+
 
