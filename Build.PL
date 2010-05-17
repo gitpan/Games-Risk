@@ -15,6 +15,7 @@ my %module_build_args = (
                                              'Test::More' => '0.88',
                                              'English' => '0',
                                              'File::Find' => '0',
+                                             'File::Temp' => '0',
                                              'Module::Build' => '0.3601'
                                            },
                        'dist_name' => 'Games-Risk',
@@ -28,28 +29,30 @@ my %module_build_args = (
                                        'Tk::PNG' => '0',
                                        'FindBin' => '0',
                                        'Tk::Font' => '0',
+                                       'Sub::Exporter' => '0',
                                        'aliased' => '0',
                                        'Image::Size' => '0',
                                        'Class::Accessor::Fast' => '0',
+                                       'Encode' => '0',
                                        'List::Util' => '0',
                                        'File::ShareDir' => '0',
                                        'File::Spec::Functions' => '0',
                                        'Tk::Pane' => '0',
                                        'List::MoreUtils' => '0',
                                        'Tk' => '0',
-                                       'Getopt::Euclid' => '0',
                                        'constant' => '0',
+                                       'Image::Magick' => '0',
                                        'Readonly' => '0',
                                        'Exporter' => '0',
                                        'Carp' => '0',
+                                       'Locale::TextDomain' => '0',
                                        'perl' => '5.010',
                                        'POE::Loop::Tk' => '0',
                                        'Tk::JPEG' => '0',
                                        'Tk::BrowseEntry' => '0',
                                        'MIME::Base64' => '0',
-                                       'File::Temp' => '0',
+                                       'Tk::Sugar' => '0',
                                        'File::Basename' => '0',
-                                       'Image::Imlib2' => '0',
                                        'UNIVERSAL::require' => '0',
                                        'POE' => '0'
                                      },
@@ -57,7 +60,7 @@ my %module_build_args = (
                        'configure_requires' => {
                                                  'Module::Build' => '0.3601'
                                                },
-                       'dist_version' => '3.101110'
+                       'dist_version' => '3.101370'
                      );
 
 

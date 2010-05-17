@@ -8,14 +8,6 @@
 # 
 #   The GNU General Public License, Version 3, June 2007
 # 
-#
-# This file is part of Games::Risk.
-# Copyright (c) 2008 Jerome Quelin, all rights reserved.
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU GPLv3+.
-#
-#
 
 use strict;
 use warnings;
@@ -23,7 +15,6 @@ use warnings;
 use FindBin qw{ $Bin };
 use lib "$Bin/../lib";
 
-use Getopt::Euclid; # should come first
 use Tk;             # should come before Games::Risk* and POE*
 use Games::Risk;
 use POE;
@@ -39,11 +30,6 @@ __END__
 prisk - classical Risk game written in perl
 
 
-=head1 VERSION
-
-This documentation refers to C<prisk> 1.0.0
-
-
 =head1 DESCRIPTION
 
 Risk is a strategic turn-based board game. Players control armies, with
@@ -56,37 +42,14 @@ the logistics of long campaigns.
 This distribution implements a graphical interface for this game.
 
 
-
-=head1 OPTIONS
-
-
-=over 4
-
-=item --version
-
-=item --usage
-
-=item --help
-
-=item --man
-
-Print the usual program information.
-
-
-=back
-
-
-
 =head1 SEE ALSO
 
 L<Games::Risk>.
 
 
-
 =head1 AUTHOR
 
 Jerome Quelin, C<< <jquelin at cpan.org> >>
-
 
 
 =head1 COPYRIGHT & LICENSE

@@ -13,15 +13,17 @@ use warnings;
 
 package Games::Risk::GUI::MoveArmies;
 BEGIN {
-  $Games::Risk::GUI::MoveArmies::VERSION = '3.101110';
+  $Games::Risk::GUI::MoveArmies::VERSION = '3.101370';
 }
 # ABSTRACT: window to move armies
 
-use Games::Risk::GUI::Constants;
 use List::Util qw{ max };
 use POE        qw{ Loop::Tk };
 use Tk;
 use Tk::Font;
+use Tk::Sugar;
+
+use Games::Risk::I18N qw{ T };
 
 use constant K => $poe_kernel;
 
@@ -78,9 +80,9 @@ sub _onpub_attack_move {
 
     # update gui
     my $top = $h->{toplevel};
-    $top->title('Country invasion');
-    $h->{lab_title}->configure(-text => 'A country has been conquered!');
-    my $title = sprintf 'You have conquered %s while attacking from %s.',
+    $top->title( T('Country invasion') );
+    $h->{lab_title}->configure(-text => T('A country has been conquered!') );
+    my $title = sprintf T('You have conquered %s while attacking from %s.'),
         $dst->name, $src->name;
     my $max = $src->armies - 1; # 1 army should guard $src
     $h->{scale}->configure(-from=>$min,-to=>$max);
@@ -90,8 +92,8 @@ sub _onpub_attack_move {
     # move window & enforce geometry
     $top->update;               # force redraw
     my ($x,$y) = $top->parent->geometry =~ /\+(\d+)\+(\d+)$/;
-    $x += max $src->x, $dst->x; $x += 50;
-    $y += max $src->y, $dst->y; $y += 50;
+    $x += max $src->coordx, $dst->coordx; $x += 50;
+    $y += max $src->coordy, $dst->coordy; $y += 50;
     $top->geometry("+$x+$y");
     $h->{toplevel}->deiconify;
     $h->{toplevel}->raise;
@@ -120,9 +122,9 @@ sub _onpub_ask_move_armies {
 
     # update gui
     my $top = $h->{toplevel};
-    $top->title('Moving armies');
-    $h->{lab_title}->configure(-text => 'Consolidate your positions');
-    my $title = sprintf 'Moving armies from %s to %s.',
+    $top->title( T('Moving armies') );
+    $h->{lab_title}->configure(-text => T('Consolidate your positions') );
+    my $title = sprintf T('Moving armies from %s to %s.'),
         $src->name, $dst->name;
     $h->{scale}->configure(-from=>0,-to=>$max);
     $h->{lab_info}->configure(-text=>$title);
@@ -131,8 +133,8 @@ sub _onpub_ask_move_armies {
     # move window & enforce geometry
     $top->update;               # force redraw
     my ($x,$y) = $top->parent->geometry =~ /\+(\d+)\+(\d+)$/;
-    $x += max $src->x, $dst->x; $x += 50;
-    $y += max $src->y, $dst->y; $y += 50;
+    $x += max $src->coordx, $dst->coordx; $x += 50;
+    $y += max $src->coordy, $dst->coordy; $y += 50;
     $top->geometry("+$x+$y");
     $h->{toplevel}->deiconify;
     $h->{toplevel}->raise;
@@ -178,21 +180,21 @@ sub _onpriv_start {
         -bg   => 'black',
         -fg   => 'white',
         -font => $font,
-    )->pack(@TOP,@PAD20,@XFILL2);
-    my $lab = $top->Label->pack(@TOP,@XFILL2);
-    my $fs  = $top->Frame->pack(@TOP,@XFILL2);
-    $fs->Label(-text=>'Armies to move')->pack(@LEFT);
+    )->pack(top,pad20,xfill2);
+    my $lab = $top->Label->pack(top,xfill2);
+    my $fs  = $top->Frame->pack(top,xfill2);
+    $fs->Label( -text => T('Armies to move') )->pack(left, S);
     $h->{armies} = 0;  # nb of armies to move
     my $sld = $fs->Scale(
         -orient    => 'horizontal',
         -width     => 5, # height since we're horizontal
         -showvalue => 1,
         -variable  => \$h->{armies},
-    )->pack(@LEFT,@XFILL2);
+    )->pack(left,xfill2,S);
     my $but = $top->Button(
-        -text    => 'Move armies',
+        -text    => T('Move armies'),
         -command => $s->postback('_but_move'),
-    )->pack(@TOP);
+    )->pack(top);
     $h->{lab_title} = $title;
     $h->{lab_info}  = $lab;
     $h->{but_move}  = $but;
@@ -248,7 +250,7 @@ Games::Risk::GUI::MoveArmies - window to move armies
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 DESCRIPTION
 
@@ -298,17 +300,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -323,6 +314,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI;
 BEGIN {
-  $Games::Risk::GUI::VERSION = '3.101110';
+  $Games::Risk::GUI::VERSION = '3.101370';
 }
 # ABSTRACT: gui multiplexer poe session
 
@@ -98,7 +98,7 @@ Games::Risk::GUI - gui multiplexer poe session
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -149,17 +149,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -174,6 +163,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 

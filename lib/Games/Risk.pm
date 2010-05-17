@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk;
 BEGIN {
-  $Games::Risk::VERSION = '3.101110';
+  $Games::Risk::VERSION = '3.101370';
 }
 # ABSTRACT: classical 'risk' board game
 
@@ -174,7 +174,8 @@ sub players_active {
 #
 sub players {
     my ($self) = @_;
-    return @{ $self->_players // [] };
+    my $players = $self->_players // []; #//padre
+    return @$players;
 }
 
 
@@ -246,7 +247,7 @@ Games::Risk - classical 'risk' board game
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 

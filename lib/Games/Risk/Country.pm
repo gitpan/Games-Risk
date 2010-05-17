@@ -13,14 +13,14 @@ use warnings;
 
 package Games::Risk::Country;
 BEGIN {
-  $Games::Risk::Country::VERSION = '3.101110';
+  $Games::Risk::Country::VERSION = '3.101370';
 }
 # ABSTRACT: map country
 
 use List::MoreUtils qw{ any };
 
 use base qw{ Class::Accessor::Fast };
-__PACKAGE__->mk_accessors( qw{ armies continent greyval name owner x y
+__PACKAGE__->mk_accessors( qw{ armies continent greyval name owner coordx coordy
     _neighbours } );
 
 
@@ -102,7 +102,8 @@ sub neighbour_add {
 #
 sub neighbours {
     my ($self) = @_;
-    return @{ $self->_neighbours // [] };
+    my $neighbours = $self->_neighbours // []; #//padre
+    return @$neighbours;
 }
 
 
@@ -118,7 +119,7 @@ Games::Risk::Country - map country
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -175,11 +176,11 @@ country name.
 
 a C<Games::Risk::Player> object currently owning the country.
 
-=item * x()
+=item * coordx()
 
 the x location of the country capital.
 
-=item * y()
+=item * coordy()
 
 the y location of the country capital.
 
@@ -219,17 +220,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -244,6 +234,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 

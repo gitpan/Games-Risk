@@ -13,16 +13,17 @@ use warnings;
 
 package Games::Risk::GUI::Cards;
 BEGIN {
-  $Games::Risk::GUI::Cards::VERSION = '3.101110';
+  $Games::Risk::GUI::Cards::VERSION = '3.101370';
 }
 # ABSTRACT: cards listing
 
-use Games::Risk::GUI::Constants;
-use Games::Risk::Resources qw{ image };
 use List::MoreUtils qw{ any firstidx };
 use POE             qw{ Loop::Tk };
 use Readonly;
+use Tk::Sugar;
 use Tk::Pane;
+
+use Games::Risk::Resources qw{ image };
 
 use constant K => $poe_kernel;
 
@@ -138,7 +139,7 @@ sub _onpub_change_button_state {
         }
     }
 
-    $h->{button}->configure( $select ? @ENON : @ENOFF );
+    $h->{button}->configure( $select ? (enabled) : (disabled) );
 }
 
 
@@ -265,21 +266,21 @@ sub _onpriv_start {
 
     #- top label
     $h->{label} = $top->Label(
-        -text => 'Select 3 cards')->pack(@TOP,@FILLX);
+        -text => 'Select 3 cards')->pack(top,fillx);
 
     #- cards frame
     $h->{frame} = $top->Scrolled('Frame',
         -scrollbars => 'e',
         -width      => ($WIDTH+5)*3,
         -height     => ($HEIGHT+5)*2,
-    )->pack(@TOP, @XFILL2);
+    )->pack(top, xfill2);
 
     #- bottom button
     $h->{button} = $top->Button(
         -text    => 'Exchange cards',
         -command => $s->postback('_but_exchange'),
-        @ENOFF,
-    )->pack(@TOP, @FILL2);
+        disabled,
+    )->pack(top, fill2);
 
     #- force window geometry
     $top->update;    # force redraw
@@ -411,7 +412,7 @@ Games::Risk::GUI::Cards - cards listing
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 DESCRIPTION
 
@@ -466,17 +467,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -491,7 +481,6 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
 

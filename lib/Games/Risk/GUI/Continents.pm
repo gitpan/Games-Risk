@@ -13,13 +13,15 @@ use warnings;
 
 package Games::Risk::GUI::Continents;
 BEGIN {
-  $Games::Risk::GUI::Continents::VERSION = '3.101110';
+  $Games::Risk::GUI::Continents::VERSION = '3.101370';
 }
 # ABSTRACT: continents listing
 
-use Games::Risk::GUI::Constants;
-use Games::Risk::Resources qw{ image };
 use POE                    qw{ Loop::Tk };
+use Tk::Sugar;
+
+use Games::Risk::I18N      qw{ T };
+use Games::Risk::Resources qw{ image };
 
 use constant K => $poe_kernel;
 
@@ -76,7 +78,7 @@ sub visibility_toggle {
     my ($h) = $_[HEAP];
 
     my $top = $h->{toplevel};
-    my $method = $top->state eq 'normal' ? 'withdraw' : 'deiconify';
+    my $method = ($top->state eq 'normal') ? 'withdraw' : 'deiconify'; # parens needed for xgettext
     $top->$method;
 }
 
@@ -98,7 +100,7 @@ sub _start {
     my $top = $opts->{parent}->Toplevel;
     $top->withdraw;           # window is hidden first
     $h->{toplevel} = $top;
-    $top->title('Continents');
+    $top->title( T('Continents') );
     $top->iconimage( image('icon-continents') );
 
     #- populate continents list
@@ -139,7 +141,7 @@ Games::Risk::GUI::Continents - continents listing
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 DESCRIPTION
 
@@ -188,17 +190,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -213,6 +204,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 

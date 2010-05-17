@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Map;
 BEGIN {
-  $Games::Risk::Map::VERSION = '3.101110';
+  $Games::Risk::Map::VERSION = '3.101370';
 }
 # ABSTRACT: map being played
 
@@ -239,8 +239,8 @@ sub _parse_file_section_countries {
         greyval   => $greyval,
         name      => $name,
         continent => $continent,
-        x         => $x,
-        y         => $y
+        coordx    => $x,
+        coordy    => $y
     });
     $self->_countries->{ $greyval } = $country;
 
@@ -312,7 +312,7 @@ Games::Risk::Map - map being played
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -402,17 +402,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -427,7 +416,6 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
 

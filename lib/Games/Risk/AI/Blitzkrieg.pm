@@ -13,11 +13,13 @@ use warnings;
 
 package Games::Risk::AI::Blitzkrieg;
 BEGIN {
-  $Games::Risk::AI::Blitzkrieg::VERSION = '3.101110';
+  $Games::Risk::AI::Blitzkrieg::VERSION = '3.101370';
 }
 # ABSTRACT: easy ai that does blitzkrieg attacks
 
 use List::Util qw{ shuffle };
+
+use Games::Risk::I18N qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -78,7 +80,7 @@ sub attack_move {
 #
 # Return a difficulty level for the ai.
 #
-sub difficulty { return 'easy' }
+sub difficulty { return T('easy') }
 
 
 #
@@ -139,13 +141,13 @@ sub place_armies {
 # Return a brief description of the ai and the way it operates.
 #
 sub _description {
-    return q{
+    return T(q{
 
         This artificial intelligence follows a blitzkrieg strategy. It
         will piles up new armies in one country, and then follow a
         random path from this attack base.
 
-    };
+    });
 }
 
 
@@ -161,7 +163,7 @@ Games::Risk::AI::Blitzkrieg - easy ai that does blitzkrieg attacks
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -200,17 +202,6 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -225,7 +216,6 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
 

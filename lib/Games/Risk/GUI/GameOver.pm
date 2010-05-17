@@ -13,14 +13,16 @@ use warnings;
 
 package Games::Risk::GUI::GameOver;
 BEGIN {
-  $Games::Risk::GUI::GameOver::VERSION = '3.101110';
+  $Games::Risk::GUI::GameOver::VERSION = '3.101370';
 }
 # ABSTRACT: window used when game is over
 
-use Games::Risk::GUI::Constants;
 use POE qw{ Loop::Tk };
 use Tk;
 use Tk::Font;
+use Tk::Sugar;
+
+use Games::Risk::I18N qw{ T };
 
 use constant K => $poe_kernel;
 
@@ -69,7 +71,7 @@ sub _onpriv_start {
 
     #-- create gui
 
-    my $top  = $opts->{parent}->Toplevel(-title=>'Game over');
+    my $top  = $opts->{parent}->Toplevel(-title=>T('Game over'));
     $h->{toplevel} = $top;
     $top->withdraw;
 
@@ -78,18 +80,17 @@ sub _onpriv_start {
         -bg   => $winner->color,
         -fg   => 'white',
         -font => $font,
-        -text => "$name won!",
-    )->pack(@TOP,@PAD20);
+        -text => sprintf( T("%s won!"), $name ),
+    )->pack(top,pad20);
     $top->Label(
-        -text => $winner->type eq 'human'
-            ? 'Congratulations, you won! Maybe the artificial '
-            . 'intelligences were not that hard?'
-            : 'Unfortunately, you lost... Try harder next time!'
-    )->pack(@TOP,@PAD20);
+        -text => ($winner->type eq 'human') ? # the ? should stay here for xgettext to understand it
+              T("Congratulations, you won!\nMaybe the artificial intelligences were not that hard?")
+            : T("Unfortunately, you lost...\nTry harder next time!")
+    )->pack(top,pad20);
     $top->Button(
-        -text    => 'Close',
+        -text    => T('Close'),
         -command => $s->postback('_but_close'),
-    )->pack(@TOP);
+    )->pack(top);
 
 
     #-- move window & enforce geometry
@@ -138,7 +139,7 @@ Games::Risk::GUI::GameOver - window used when game is over
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 DESCRIPTION
 
@@ -180,17 +181,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -205,6 +195,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 

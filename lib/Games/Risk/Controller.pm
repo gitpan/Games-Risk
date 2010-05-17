@@ -13,16 +13,19 @@ use warnings;
 
 package Games::Risk::Controller;
 BEGIN {
-  $Games::Risk::Controller::VERSION = '3.101110';
+  $Games::Risk::Controller::VERSION = '3.101370';
 }
 # ABSTRACT: controller poe session for risk
 
-use Games::Risk::Map;
-use Games::Risk::Player;
-use Games::Risk::Resources qw{ map_path };
 use List::Util      qw{ min shuffle };
 use POE             qw{ Loop::Tk };
 use Readonly;
+
+use Games::Risk::I18N      qw{ T };
+use Games::Risk::Map;
+use Games::Risk::Player;
+use Games::Risk::Resources qw{ map_path };
+
 use constant K => $poe_kernel;
 
 
@@ -540,25 +543,30 @@ sub _onpriv_create_players {
 
         my $player;
         given ($type) {
-            when ('Human') {
+            when ( $type eq T('Human') ) {         # FIXME 20100517 JQ: mix string & code
                 # human player
                 $player = Games::Risk::Player->new({
-                        name  => $name,
-                        color => $color,
-                        type  => 'human',
+                    name  => $name,
+                    color => $color,
+                    type  => 'human',
                 });
             }
-            when (/^Computer, (\w+)$/) {
+            when ( $type eq T('Computer, easy') ) { # FIXME 20100517 JQ: mix string & code
                 # artificial intelligence
-                my %class = (
-                    'easy' => 'Games::Risk::AI::Blitzkrieg',
-                    'hard' => 'Games::Risk::AI::Hegemon',
-                );
                 $player = Games::Risk::Player->new({
-                        name     => $name,
-                        color    => $color,
-                        type     => 'ai',
-                        ai_class => $class{$1},
+                    name     => $name,
+                    color    => $color,
+                    type     => 'ai',
+                    ai_class => 'Games::Risk::AI::Blitzkrieg',
+                });
+            }
+            when ( $type eq T('Computer, hard') ) { # FIXME 20100517 JQ: mix string & code
+                # artificial intelligence
+                $player = Games::Risk::Player->new({
+                    name     => $name,
+                    color    => $color,
+                    type     => 'ai',
+                    ai_class => 'Games::Risk::AI::Hegemon',
                 });
             }
             default {
@@ -746,7 +754,7 @@ Games::Risk::Controller - controller poe session for risk
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -774,17 +782,6 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -799,7 +796,6 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
 

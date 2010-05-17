@@ -19,14 +19,17 @@ lib/Games/Risk/Country.pm
 lib/Games/Risk/GUI.pm
 lib/Games/Risk/GUI/Board.pm
 lib/Games/Risk/GUI/Cards.pm
-lib/Games/Risk/GUI/Constants.pm
 lib/Games/Risk/GUI/Continents.pm
 lib/Games/Risk/GUI/GameOver.pm
 lib/Games/Risk/GUI/MoveArmies.pm
 lib/Games/Risk/GUI/Startup.pm
+lib/Games/Risk/I18N.pm
 lib/Games/Risk/Map.pm
 lib/Games/Risk/Player.pm
 lib/Games/Risk/Resources.pm
+lib/LocaleData/Games-Risk-messages.pot
+lib/LocaleData/fr/LC_MESSAGES/Games-Risk.mo
+lib/LocaleData/fr/LC_MESSAGES/Games-Risk.po
 share/images/card-artillery.png
 share/images/card-bg.png
 share/images/card-cavalry.png
@@ -73,3 +76,4 @@ t/release-pod-coverage.t
 t/release-pod-syntax.t
 t/release-portability.t
 t/release-unused-vars.t
+tools/update_pot_file

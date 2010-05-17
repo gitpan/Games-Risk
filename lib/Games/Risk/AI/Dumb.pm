@@ -13,9 +13,11 @@ use warnings;
 
 package Games::Risk::AI::Dumb;
 BEGIN {
-  $Games::Risk::AI::Dumb::VERSION = '3.101110';
+  $Games::Risk::AI::Dumb::VERSION = '3.101370';
 }
 # ABSTRACT: dumb ai that does nothing
+
+use Games::Risk::I18N qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -42,7 +44,7 @@ sub attack {
 #
 # Return a difficulty level for the ai.
 #
-sub difficulty { return 'very easy' }
+sub difficulty { return T('very easy') }
 
 
 #
@@ -88,12 +90,12 @@ sub place_armies {
 # Return a brief description of the ai and the way it operates.
 #
 sub _description {
-    return q{
+    return T(q{
 
         This artificial intelligence does nothing: it just piles up new armies
         randomly, and never ever attacks nor move armies.
 
-    };
+    });
 }
 
 1;
@@ -108,7 +110,7 @@ Games::Risk::AI::Dumb - dumb ai that does nothing
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -144,17 +146,6 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -169,7 +160,6 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
 

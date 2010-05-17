@@ -13,11 +13,13 @@ use warnings;
 
 package Games::Risk::AI::Hegemon;
 BEGIN {
-  $Games::Risk::AI::Hegemon::VERSION = '3.101110';
+  $Games::Risk::AI::Hegemon::VERSION = '3.101370';
 }
 # ABSTRACT: ai that tries to conquer the world
 
 use List::MoreUtils qw{ all };
+
+use Games::Risk::I18N qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -218,7 +220,7 @@ sub attack_move {
 #
 # Return a difficulty level for the ai.
 #
-sub difficulty { return 'hard' }
+sub difficulty { return T('hard') }
 
 
 #
@@ -461,14 +463,14 @@ sub _country_to_free_continent {
 # Return a brief description of the ai and the way it operates.
 #
 sub _description {
-    return q{
+    return T(q{
 
         This artificial intelligence is optimized to conquer the world.
         It checks what countries are most valuable for it, optimizes
         attacks and moves for continent bonus and blocking other
         players.
 
-    };
+    });
 }
 
 
@@ -548,7 +550,7 @@ Games::Risk::AI::Hegemon - ai that tries to conquer the world
 
 =head1 VERSION
 
-version 3.101110
+version 3.101370
 
 =head1 SYNOPSIS
 
@@ -591,17 +593,6 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-Jerome Quelin, C<< <jquelin at cpan.org> >>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (c) 2008 Jerome Quelin, all rights reserved.
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU GPLv3+.
-
-=head1 AUTHOR
-
   Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
@@ -616,6 +607,5 @@ This is free software, licensed under:
 
 
 __END__
-
 
 
