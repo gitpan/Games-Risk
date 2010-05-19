@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Board;
 BEGIN {
-  $Games::Risk::GUI::Board::VERSION = '3.101370';
+  $Games::Risk::GUI::Board::VERSION = '3.101390';
 }
 # ABSTRACT: board gui component
 
@@ -34,7 +34,7 @@ use Games::Risk::GUI::Continents;
 use Games::Risk::GUI::GameOver;
 use Games::Risk::GUI::MoveArmies;
 use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ image };
+use Games::Risk::Resources qw{ image $SHAREDIR };
 
 use constant K => $poe_kernel;
 
@@ -82,6 +82,7 @@ sub spawn {
             _quit                          => \&_quit,
             _show_cards                    => \&_show_cards,
             _show_continents               => \&_show_continents,
+            _show_help                     => \&_show_help,
             _window_close                  => \&_ongui_window_close,
             # public events
             attack                         => \&_onpub_attack,
@@ -549,6 +550,11 @@ sub _onpriv_start {
 
     K->alias_set('board');
     my $top = $h->{toplevel} = $args->{toplevel};
+    $top->title('prisk');
+    my $icon = $SHAREDIR->file('icons', '32', 'prisk.png');
+    my $mask = $SHAREDIR->file('icons', '32', 'prisk-mask.xbm');
+    $top->iconimage( $top->Photo(-file=>$icon) );
+    $top->iconmask( '@' . $mask );
 
     #-- various resources
 
@@ -566,7 +572,7 @@ sub _onpriv_start {
         -label       => T('~Close'),
         -accelerator => 'Ctrl+W',
         -command     => $s->postback('_window_close'),
-        -image       => image('fileclose16'),
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'close.png')),
         -compound    => 'left',
     );
     $top->bind('<Control-w>', $s->postback('_window_close'));
@@ -576,7 +582,7 @@ sub _onpriv_start {
         -label       => T('~Quit'),
         -accelerator => 'Ctrl+Q',
         -command     => $s->postback('_quit'),
-        -image       => image('actexit16'),
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'exit.png')),
         -compound    => 'left',
     );
     $top->bind('<Control-q>', $s->postback('_quit'));
@@ -587,7 +593,7 @@ sub _onpriv_start {
         -label       => T('~Cards'),
         -accelerator => 'F5',
         -command     => $s->postback('_show_cards'),
-        -image       => image('icon-cards'),
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'cards.png')),
         -compound    => 'left',
     );
     $top->bind('<F5>', $s->postback('_show_cards'));
@@ -595,11 +601,29 @@ sub _onpriv_start {
         -label       => T('C~ontinents'),
         -accelerator => 'F6',
         -command     => $s->postback('_show_continents'),
-        -image       => image('icon-continents'),
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'continents.png')),
         -compound    => 'left',
     );
     $top->bind('<F6>', $s->postback('_show_continents'));
 
+    my $help = $menubar->cascade(-label => T('~Help'));
+    $help->command(
+        -label       => T('~Help'),
+        -accelerator => 'F1',
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'help.png')),
+        -compound    => 'left',
+        -command     => $s->postback('_show_help'),
+    );
+    $top->bind('<F1>', $s->postback('_show_help'));
+    $help->command(
+        -label       => T('~About'),
+        -image       => $top->Photo(-file=>$SHAREDIR->file('icons', '16', 'about.png')),
+        -compound    => 'left',
+        -command     => sub {
+            require Games::Risk::Tk::About;
+            Games::Risk::Tk::About->new({parent=>$top});
+        },
+    );
 
 
     #$h->{menu}{view} = $menubar->entrycget(1, '-menu');
@@ -1244,6 +1268,17 @@ sub _show_continents {
     K->post('continents', 'visibility_toggle');
 }
 
+#
+# _show_about()
+#
+# request Help/About window to be shown/hidden.
+#
+sub _show_help {
+    my $h = $_[HEAP];
+    require Games::Risk::Tk::Help;
+    Games::Risk::Tk::Help->new({parent=>$h->{toplevel}});
+}
+
 
 #
 # event: _window_close()
@@ -1281,7 +1316,7 @@ Games::Risk::GUI::Board - board gui component
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

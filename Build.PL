@@ -11,8 +11,8 @@ my %module_build_args = (
                                          ],
                        'license' => 'gpl',
                        'build_requires' => {
-                                             'Scalar::Util' => '0',
                                              'Test::More' => '0.88',
+                                             'Scalar::Util' => '0',
                                              'English' => '0',
                                              'File::Find' => '0',
                                              'File::Temp' => '0',
@@ -26,8 +26,6 @@ my %module_build_args = (
                        'module_name' => 'Games::Risk',
                        'requires' => {
                                        'Tk::Balloon' => '0',
-                                       'Tk::PNG' => '0',
-                                       'FindBin' => '0',
                                        'Tk::Font' => '0',
                                        'Sub::Exporter' => '0',
                                        'aliased' => '0',
@@ -35,32 +33,38 @@ my %module_build_args = (
                                        'Class::Accessor::Fast' => '0',
                                        'Encode' => '0',
                                        'List::Util' => '0',
-                                       'File::ShareDir' => '0',
-                                       'File::Spec::Functions' => '0',
                                        'Tk::Pane' => '0',
                                        'List::MoreUtils' => '0',
                                        'Tk' => '0',
-                                       'constant' => '0',
                                        'Image::Magick' => '0',
-                                       'Readonly' => '0',
+                                       'Tk::BrowseEntry' => '0',
+                                       'Tk::Sugar' => '0',
+                                       'Path::Class' => '0',
+                                       'POE' => '0',
+                                       'Tk::PNG' => '0',
+                                       'FindBin' => '0',
+                                       'File::ShareDir' => '0',
+                                       'File::Spec::Functions' => '0',
+                                       'Moose' => '0',
+                                       'Tk::Role::Dialog' => '0',
+                                       'constant' => '0',
                                        'Exporter' => '0',
-                                       'Carp' => '0',
+                                       'Readonly' => '0',
                                        'Locale::TextDomain' => '0',
+                                       'Carp' => '0',
                                        'perl' => '5.010',
                                        'POE::Loop::Tk' => '0',
                                        'Tk::JPEG' => '0',
-                                       'Tk::BrowseEntry' => '0',
                                        'MIME::Base64' => '0',
-                                       'Tk::Sugar' => '0',
                                        'File::Basename' => '0',
                                        'UNIVERSAL::require' => '0',
-                                       'POE' => '0'
+                                       'Tk::Pod::Text' => '0'
                                      },
                        'recommends' => {},
                        'configure_requires' => {
                                                  'Module::Build' => '0.3601'
                                                },
-                       'dist_version' => '3.101370'
+                       'dist_version' => '3.101390'
                      );
 
 

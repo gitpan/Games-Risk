@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::AI;
 BEGIN {
-  $Games::Risk::AI::VERSION = '3.101370';
+  $Games::Risk::AI::VERSION = '3.101390';
 }
 # ABSTRACT: base class for all ais
 
@@ -297,7 +297,7 @@ Games::Risk::AI - base class for all ais
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Cards;
 BEGIN {
-  $Games::Risk::GUI::Cards::VERSION = '3.101370';
+  $Games::Risk::GUI::Cards::VERSION = '3.101390';
 }
 # ABSTRACT: cards listing
 
@@ -23,7 +23,8 @@ use Readonly;
 use Tk::Sugar;
 use Tk::Pane;
 
-use Games::Risk::Resources qw{ image };
+use Games::Risk::I18N      qw{ T };
+use Games::Risk::Resources qw{ image $SHAREDIR };
 
 use constant K => $poe_kernel;
 
@@ -261,12 +262,15 @@ sub _onpriv_start {
     my $top = $opts->{parent}->Toplevel;
     $top->withdraw;           # window is hidden first
     $h->{toplevel} = $top;
-    $top->title('Cards');
-    $top->iconimage( image('icon-cards') );
+    $top->title( T('Cards') );
+    my $icon = $SHAREDIR->file('icons', '32', 'cards.png');
+    my $mask = $SHAREDIR->file('icons', '32', 'cards-mask.xbm');
+    $top->iconimage( $top->Photo(-file=>$icon) );
+    $top->iconmask( '@' . $mask );
 
     #- top label
     $h->{label} = $top->Label(
-        -text => 'Select 3 cards')->pack(top,fillx);
+        -text => T('Select 3 cards'))->pack(top,fillx);
 
     #- cards frame
     $h->{frame} = $top->Scrolled('Frame',
@@ -277,7 +281,7 @@ sub _onpriv_start {
 
     #- bottom button
     $h->{button} = $top->Button(
-        -text    => 'Exchange cards',
+        -text    => T('Exchange cards'),
         -command => $s->postback('_but_exchange'),
         disabled,
     )->pack(top, fill2);
@@ -412,7 +416,7 @@ Games::Risk::GUI::Cards - cards listing
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 DESCRIPTION
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Continent;
 BEGIN {
-  $Games::Risk::Continent::VERSION = '3.101370';
+  $Games::Risk::Continent::VERSION = '3.101390';
 }
 # ABSTRACT: continent object
 
@@ -88,7 +88,7 @@ Games::Risk::Continent - continent object
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

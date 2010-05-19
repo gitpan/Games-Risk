@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::AI::Hegemon;
 BEGIN {
-  $Games::Risk::AI::Hegemon::VERSION = '3.101370';
+  $Games::Risk::AI::Hegemon::VERSION = '3.101390';
 }
 # ABSTRACT: ai that tries to conquer the world
 
@@ -550,7 +550,7 @@ Games::Risk::AI::Hegemon - ai that tries to conquer the world
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Continents;
 BEGIN {
-  $Games::Risk::GUI::Continents::VERSION = '3.101370';
+  $Games::Risk::GUI::Continents::VERSION = '3.101390';
 }
 # ABSTRACT: continents listing
 
@@ -21,7 +21,7 @@ use POE                    qw{ Loop::Tk };
 use Tk::Sugar;
 
 use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ image };
+use Games::Risk::Resources qw{ image $SHAREDIR };
 
 use constant K => $poe_kernel;
 
@@ -101,7 +101,10 @@ sub _start {
     $top->withdraw;           # window is hidden first
     $h->{toplevel} = $top;
     $top->title( T('Continents') );
-    $top->iconimage( image('icon-continents') );
+    my $icon = $SHAREDIR->file('icons', '32', 'continents.png');
+    my $mask = $SHAREDIR->file('icons', '32', 'continents-mask.xbm');
+    $top->iconimage( $top->Photo(-file=>$icon) );
+    $top->iconmask( '@' . $mask );
 
     #- populate continents list
     my $map = Games::Risk->new->map;
@@ -141,7 +144,7 @@ Games::Risk::GUI::Continents - continents listing
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 DESCRIPTION
 

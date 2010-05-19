@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Startup;
 BEGIN {
-  $Games::Risk::GUI::Startup::VERSION = '3.101370';
+  $Games::Risk::GUI::Startup::VERSION = '3.101390';
 }
 # ABSTRACT: startup window
 
@@ -28,7 +28,7 @@ use Tk::Font;
 use Tk::Sugar;
 
 use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ image maps };
+use Games::Risk::Resources qw{ image maps $SHAREDIR };
 
 use constant K => $poe_kernel;
 
@@ -305,6 +305,12 @@ sub _onpriv_start {
 
     K->alias_set('startup');
     my $top = $h->{toplevel} = $args->{toplevel};
+    $top->title('prisk - ' . T('new game'));
+    my $icon = $SHAREDIR->file('icons', '32', 'prisk.png');
+    my $mask = $SHAREDIR->file('icons', '32', 'prisk-mask.xbm');
+    $top->iconimage( $top->Photo(-file=>$icon) );
+    $top->iconmask( '@' . $mask );
+
 
     #-- initializations
     $h->{players} = [];
@@ -506,7 +512,7 @@ Games::Risk::GUI::Startup - startup window
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

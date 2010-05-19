@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Country;
 BEGIN {
-  $Games::Risk::Country::VERSION = '3.101370';
+  $Games::Risk::Country::VERSION = '3.101390';
 }
 # ABSTRACT: map country
 
@@ -119,7 +119,7 @@ Games::Risk::Country - map country
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 

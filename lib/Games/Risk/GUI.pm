@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI;
 BEGIN {
-  $Games::Risk::GUI::VERSION = '3.101370';
+  $Games::Risk::GUI::VERSION = '3.101390';
 }
 # ABSTRACT: gui multiplexer poe session
 
@@ -98,7 +98,7 @@ Games::Risk::GUI - gui multiplexer poe session
 
 =head1 VERSION
 
-version 3.101370
+version 3.101390
 
 =head1 SYNOPSIS
 
