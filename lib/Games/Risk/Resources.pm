@@ -13,15 +13,17 @@ use warnings;
 
 package Games::Risk::Resources;
 BEGIN {
-  $Games::Risk::Resources::VERSION = '3.101390';
+  $Games::Risk::Resources::VERSION = '3.101430';
 }
 # ABSTRACT: utility module to load bundled resources
 
 use File::Basename qw{ basename };
 use File::ShareDir qw{ dist_dir };
 use File::Spec::Functions;
+use FindBin qw{ $Bin };
 use POE qw{ Loop::Tk };
 use Path::Class;
+use Readonly;
 use Tk;
 use Tk::JPEG;
 use Tk::PNG;
@@ -31,7 +33,7 @@ use base qw{ Exporter };
 our @EXPORT_OK = qw{ image map_path maps $SHAREDIR };
 my (%images, %maps);
 
-our $SHAREDIR = dir( dist_dir( 'Games-Risk' ) );
+Readonly our $SHAREDIR => _find_sharedir();
 
 
 #--
@@ -83,6 +85,12 @@ sub _find_maps {
 
     my $glob = catfile($dirname, 'maps', '*.map');
     %maps = map { ( basename($_,qw{.map}) => $_ ) } glob $glob;
+}
+
+sub _find_sharedir {
+    my $root = dir($Bin)->parent;
+    return $root->subdir('share') if -f $root->file('dist.ini');
+    return dir( dist_dir( 'Games-Risk' ) );
 }
 
 
@@ -146,7 +154,7 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.101390
+version 3.101430
 
 =head1 SYNOPSIS
 

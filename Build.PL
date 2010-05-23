@@ -41,15 +41,19 @@ my %module_build_args = (
                                        'Tk::Sugar' => '0',
                                        'Path::Class' => '0',
                                        'POE' => '0',
+                                       'Tk::TableMatrix' => '0',
+                                       'MooseX::Has::Sugar' => '0',
                                        'Tk::PNG' => '0',
                                        'FindBin' => '0',
                                        'File::ShareDir' => '0',
                                        'File::Spec::Functions' => '0',
                                        'Moose' => '0',
+                                       'MooseX::SemiAffordanceAccessor' => '0',
+                                       'MooseX::POE' => '0',
                                        'Tk::Role::Dialog' => '0',
                                        'constant' => '0',
-                                       'Exporter' => '0',
                                        'Readonly' => '0',
+                                       'Exporter' => '0',
                                        'Locale::TextDomain' => '0',
                                        'Carp' => '0',
                                        'perl' => '5.010',
@@ -64,7 +68,7 @@ my %module_build_args = (
                        'configure_requires' => {
                                                  'Module::Build' => '0.3601'
                                                },
-                       'dist_version' => '3.101390'
+                       'dist_version' => '3.101430'
                      );
 
 

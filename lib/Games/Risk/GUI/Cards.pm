@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Cards;
 BEGIN {
-  $Games::Risk::GUI::Cards::VERSION = '3.101390';
+  $Games::Risk::GUI::Cards::VERSION = '3.101430';
 }
 # ABSTRACT: cards listing
 
@@ -416,7 +416,7 @@ Games::Risk::GUI::Cards - cards listing
 
 =head1 VERSION
 
-version 3.101390
+version 3.101430
 
 =head1 DESCRIPTION
 

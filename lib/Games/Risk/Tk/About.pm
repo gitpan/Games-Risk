@@ -13,11 +13,10 @@ use warnings;
 
 package Games::Risk::Tk::About;
 BEGIN {
-  $Games::Risk::Tk::About::VERSION = '3.101390';
+  $Games::Risk::Tk::About::VERSION = '3.101430';
 }
 # ABSTRACT: prisk about information
 
-use File::ShareDir qw{ dist_dir };
 use Moose;
 use Path::Class;
 
@@ -57,7 +56,7 @@ Games::Risk::Tk::About - prisk about information
 
 =head1 VERSION
 
-version 3.101390
+version 3.101430
 
 =head1 DESCRIPTION
 

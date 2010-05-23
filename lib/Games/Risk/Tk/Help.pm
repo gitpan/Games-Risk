@@ -13,11 +13,10 @@ use warnings;
 
 package Games::Risk::Tk::Help;
 BEGIN {
-  $Games::Risk::Tk::Help::VERSION = '3.101390';
+  $Games::Risk::Tk::Help::VERSION = '3.101430';
 }
 # ABSTRACT: prisk manual window
 
-use File::ShareDir qw{ dist_dir };
 use Moose;
 use Path::Class;
 use Tk::Pod::Text;
@@ -49,7 +48,7 @@ sub _build_gui {
     my ($self,$f) = @_;
 
     $f->PodText(
-        -file       => file( dist_dir('Games-Risk'),'manual.pod' ),
+        -file       => $SHAREDIR->file('manual.pod'),
         -scrollbars => 'e',
     )->pack( top, xfill2, pad10 );
 }
@@ -67,7 +66,7 @@ Games::Risk::Tk::Help - prisk manual window
 
 =head1 VERSION
 
-version 3.101390
+version 3.101430
 
 =head1 DESCRIPTION
 

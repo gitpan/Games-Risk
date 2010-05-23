@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Board;
 BEGIN {
-  $Games::Risk::GUI::Board::VERSION = '3.101390';
+  $Games::Risk::GUI::Board::VERSION = '3.101430';
 }
 # ABSTRACT: board gui component
 
@@ -30,11 +30,12 @@ use Tk::PNG;
 use Tk::Sugar;
 
 use Games::Risk::GUI::Cards;
-use Games::Risk::GUI::Continents;
 use Games::Risk::GUI::GameOver;
 use Games::Risk::GUI::MoveArmies;
 use Games::Risk::I18N      qw{ T };
 use Games::Risk::Resources qw{ image $SHAREDIR };
+use Games::Risk::Tk::Continents;
+
 
 use constant K => $poe_kernel;
 
@@ -761,7 +762,7 @@ sub _onpriv_start {
 
     #-- other window
     Games::Risk::GUI::Cards->spawn({parent=>$top});
-    Games::Risk::GUI::Continents->spawn({parent=>$top});
+    Games::Risk::Tk::Continents->new({parent=>$top});
     Games::Risk::GUI::MoveArmies->spawn({parent=>$top});
 
     #-- say that we're done
@@ -1316,7 +1317,7 @@ Games::Risk::GUI::Board - board gui component
 
 =head1 VERSION
 
-version 3.101390
+version 3.101430
 
 =head1 SYNOPSIS
 
