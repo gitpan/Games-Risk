@@ -13,12 +13,12 @@ use warnings;
 
 package Games::Risk::Controller;
 BEGIN {
-  $Games::Risk::Controller::VERSION = '3.101430';
+  $Games::Risk::Controller::VERSION = '3.101510';
 }
 # ABSTRACT: controller poe session for risk
 
-use List::Util      qw{ min shuffle };
 use POE             qw{ Loop::Tk };
+use List::Util      qw{ min shuffle };
 use Readonly;
 
 use Games::Risk::I18N      qw{ T };
@@ -754,7 +754,7 @@ Games::Risk::Controller - controller poe session for risk
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

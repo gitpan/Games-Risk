@@ -13,12 +13,13 @@ use warnings;
 
 package Games::Risk::Tk::About;
 BEGIN {
-  $Games::Risk::Tk::About::VERSION = '3.101430';
+  $Games::Risk::Tk::About::VERSION = '3.101510';
 }
 # ABSTRACT: prisk about information
 
 use Moose;
 use Path::Class;
+use Tk::Role::Dialog 1.101480;
 
 use Games::Risk;
 use Games::Risk::I18N      qw{ T };
@@ -30,7 +31,7 @@ with 'Tk::Role::Dialog';
 # -- initialization / finalization
 
 sub _build_title     { 'prisk - ' . T('about') }
-sub _build_icon      { $SHAREDIR->file('icons', '32', 'about.png')->stringify }
+sub _build_icon      { $SHAREDIR->file('icons', '32', 'about.png') }
 sub _build_header    { "prisk $Games::Risk::VERSION" }
 sub _build_resizable { 0 }
 sub _build_cancel    { T('Close') }
@@ -56,7 +57,7 @@ Games::Risk::Tk::About - prisk about information
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 DESCRIPTION
 

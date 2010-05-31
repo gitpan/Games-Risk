@@ -50,7 +50,7 @@ my %module_build_args = (
                                        'Moose' => '0',
                                        'MooseX::SemiAffordanceAccessor' => '0',
                                        'MooseX::POE' => '0',
-                                       'Tk::Role::Dialog' => '0',
+                                       'Tk::Role::Dialog' => '1.101480',
                                        'constant' => '0',
                                        'Readonly' => '0',
                                        'Exporter' => '0',
@@ -68,7 +68,7 @@ my %module_build_args = (
                        'configure_requires' => {
                                                  'Module::Build' => '0.3601'
                                                },
-                       'dist_version' => '3.101430'
+                       'dist_version' => '3.101510'
                      );
 
 

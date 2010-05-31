@@ -13,13 +13,14 @@ use warnings;
 
 package Games::Risk::GUI;
 BEGIN {
-  $Games::Risk::GUI::VERSION = '3.101430';
+  $Games::Risk::GUI::VERSION = '3.101510';
 }
 # ABSTRACT: gui multiplexer poe session
 
+use POE qw{ Loop::Tk };
+
 use Games::Risk::GUI::Board;
 use Games::Risk::GUI::Startup;
-use POE qw{ Loop::Tk };
 
 use constant K => $poe_kernel;
 
@@ -98,7 +99,7 @@ Games::Risk::GUI - gui multiplexer poe session
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

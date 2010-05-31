@@ -13,15 +13,15 @@ use warnings;
 
 package Games::Risk::Resources;
 BEGIN {
-  $Games::Risk::Resources::VERSION = '3.101430';
+  $Games::Risk::Resources::VERSION = '3.101510';
 }
 # ABSTRACT: utility module to load bundled resources
 
+use POE            qw{ Loop::Tk };
 use File::Basename qw{ basename };
 use File::ShareDir qw{ dist_dir };
 use File::Spec::Functions;
-use FindBin qw{ $Bin };
-use POE qw{ Loop::Tk };
+use FindBin        qw{ $Bin };
 use Path::Class;
 use Readonly;
 use Tk;
@@ -154,7 +154,7 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

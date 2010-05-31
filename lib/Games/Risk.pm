@@ -13,16 +13,17 @@ use warnings;
 
 package Games::Risk;
 BEGIN {
-  $Games::Risk::VERSION = '3.101430';
+  $Games::Risk::VERSION = '3.101510';
 }
 # ABSTRACT: classical 'risk' board game
 
+use POE        qw{ Loop::Tk };
+use List::Util qw{ shuffle };
+
+use constant K => $poe_kernel;
 
 use Games::Risk::Controller;
 use Games::Risk::GUI;
-use List::Util qw{ shuffle };
-use POE        qw{ Loop::Tk };
-use constant K => $poe_kernel;
 
 
 use base qw{ Class::Accessor::Fast };
@@ -247,7 +248,7 @@ Games::Risk - classical 'risk' board game
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

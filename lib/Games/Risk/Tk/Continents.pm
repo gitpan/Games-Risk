@@ -13,19 +13,20 @@ use warnings;
 
 package Games::Risk::Tk::Continents;
 BEGIN {
-  $Games::Risk::Tk::Continents::VERSION = '3.101430';
+  $Games::Risk::Tk::Continents::VERSION = '3.101510';
 }
 # ABSTRACT: continents information
 
+use POE                    qw{ Loop::Tk };
 use List::MoreUtils        qw{ firstidx };
 use List::Util             qw{ max };
 use Moose;
 use MooseX::Has::Sugar;
-use MooseX::SemiAffordanceAccessor;
-use POE                    qw{ Loop::Tk };
 use MooseX::POE;
+use MooseX::SemiAffordanceAccessor;
 use Readonly;
 use Tk;
+use Tk::Role::Dialog       1.101480;
 use Tk::Sugar;
 use Tk::TableMatrix;
 
@@ -54,11 +55,12 @@ has _values => (
 
 # -- initialization / finalization
 
+sub _build_hidden    { 1 }
 sub _build_title     { 'prisk - ' . T('continents') }
-sub _build_icon      { $SHAREDIR->file('icons', '32','continents.png')->stringify }
+sub _build_icon      { $SHAREDIR->file('icons', '32','continents.png') }
 sub _build_header    { T('Continents information') }
 sub _build_resizable { 0 }
-sub _build_ok        { T('Close') }
+sub _build_hide      { T('Close') }
 
 
 #
@@ -156,7 +158,7 @@ event visibility_toggle => sub {
 # -- private methods
 
 #
-# $self->_valid;
+# $self->_build_gui;
 #
 # called by tk:role:dialog to build the inner dialog.
 #
@@ -209,16 +211,6 @@ sub _build_gui {
 }
 
 
-#
-# $self->_valid;
-#
-# called by tk:role:dialog when user click the ok button.
-#
-sub _valid {
-    my $self = shift;
-    $self->yield( 'visibility_toggle' );
-}
-
 no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
@@ -232,7 +224,7 @@ Games::Risk::Tk::Continents - continents information
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 DESCRIPTION
 

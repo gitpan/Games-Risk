@@ -13,13 +13,13 @@ use warnings;
 
 package Games::Risk::GUI::Startup;
 BEGIN {
-  $Games::Risk::GUI::Startup::VERSION = '3.101430';
+  $Games::Risk::GUI::Startup::VERSION = '3.101510';
 }
 # ABSTRACT: startup window
 
-use List::Util     qw{ shuffle };
-use List::MoreUtils qw{ any };
 use POE             qw{ Loop::Tk };
+use List::Util      qw{ shuffle };
+use List::MoreUtils qw{ any };
 use Readonly;
 use Tk;
 use Tk::Balloon;
@@ -512,7 +512,7 @@ Games::Risk::GUI::Startup - startup window
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

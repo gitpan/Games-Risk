@@ -13,13 +13,13 @@ use warnings;
 
 package Games::Risk::AI;
 BEGIN {
-  $Games::Risk::AI::VERSION = '3.101430';
+  $Games::Risk::AI::VERSION = '3.101510';
 }
 # ABSTRACT: base class for all ais
 
+use POE        qw{ Loop::Tk };
 use Carp;
 use List::Util qw{ shuffle };
-use POE        qw{ Loop::Tk };
 use Readonly;
 
 use constant K => $poe_kernel;
@@ -297,7 +297,7 @@ Games::Risk::AI - base class for all ais
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 SYNOPSIS
 

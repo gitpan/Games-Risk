@@ -13,12 +13,12 @@ use warnings;
 
 package Games::Risk::GUI::MoveArmies;
 BEGIN {
-  $Games::Risk::GUI::MoveArmies::VERSION = '3.101430';
+  $Games::Risk::GUI::MoveArmies::VERSION = '3.101510';
 }
 # ABSTRACT: window to move armies
 
-use List::Util qw{ max };
 use POE        qw{ Loop::Tk };
+use List::Util qw{ max };
 use Tk;
 use Tk::Font;
 use Tk::Sugar;
@@ -250,7 +250,7 @@ Games::Risk::GUI::MoveArmies - window to move armies
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 DESCRIPTION
 

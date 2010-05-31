@@ -13,13 +13,14 @@ use warnings;
 
 package Games::Risk::Tk::Help;
 BEGIN {
-  $Games::Risk::Tk::Help::VERSION = '3.101430';
+  $Games::Risk::Tk::Help::VERSION = '3.101510';
 }
 # ABSTRACT: prisk manual window
 
 use Moose;
 use Path::Class;
 use Tk::Pod::Text;
+use Tk::Role::Dialog 1.101480;
 use Tk::Sugar;
 
 use Games::Risk::I18N      qw{ T };
@@ -31,7 +32,7 @@ with 'Tk::Role::Dialog';
 # -- initialization / finalization
 
 sub _build_title     { 'prisk - ' . T('help') }
-sub _build_icon      { $SHAREDIR->file('icons', '32','help.png')->stringify }
+sub _build_icon      { $SHAREDIR->file('icons', '32','help.png') }
 sub _build_header    { T('How to play?') }
 sub _build_resizable { 1 }
 sub _build_cancel    { T('Close') }
@@ -66,7 +67,7 @@ Games::Risk::Tk::Help - prisk manual window
 
 =head1 VERSION
 
-version 3.101430
+version 3.101510
 
 =head1 DESCRIPTION
 
