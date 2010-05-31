@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::GameOver;
 BEGIN {
-  $Games::Risk::GUI::GameOver::VERSION = '3.101510';
+  $Games::Risk::GUI::GameOver::VERSION = '3.101511';
 }
 # ABSTRACT: window used when game is over
 
@@ -139,7 +139,7 @@ Games::Risk::GUI::GameOver - window used when game is over
 
 =head1 VERSION
 
-version 3.101510
+version 3.101511
 
 =head1 DESCRIPTION
 

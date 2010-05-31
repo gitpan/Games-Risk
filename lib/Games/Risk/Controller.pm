@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Controller;
 BEGIN {
-  $Games::Risk::Controller::VERSION = '3.101510';
+  $Games::Risk::Controller::VERSION = '3.101511';
 }
 # ABSTRACT: controller poe session for risk
 
@@ -754,7 +754,7 @@ Games::Risk::Controller - controller poe session for risk
 
 =head1 VERSION
 
-version 3.101510
+version 3.101511
 
 =head1 SYNOPSIS
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::I18N;
 BEGIN {
-  $Games::Risk::I18N::VERSION = '3.101510';
+  $Games::Risk::I18N::VERSION = '3.101511';
 }
 # ABSTRACT: game internationalization
 
@@ -38,7 +38,7 @@ Games::Risk::I18N - game internationalization
 
 =head1 VERSION
 
-version 3.101510
+version 3.101511
 
 =head1 SYNOPSIS
 
