@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Board;
 BEGIN {
-  $Games::Risk::GUI::Board::VERSION = '3.101511';
+  $Games::Risk::GUI::Board::VERSION = '3.101590';
 }
 # ABSTRACT: board gui component
 
@@ -1377,7 +1377,7 @@ Games::Risk::GUI::Board - board gui component
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 SYNOPSIS
 

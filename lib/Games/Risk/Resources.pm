@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Resources;
 BEGIN {
-  $Games::Risk::Resources::VERSION = '3.101511';
+  $Games::Risk::Resources::VERSION = '3.101590';
 }
 # ABSTRACT: utility module to load bundled resources
 
@@ -134,12 +134,10 @@ sub _load_tk_icons {
 #--
 # INITIALIZATION
 
-BEGIN {
-    my $dirname = dist_dir('Games-Risk');
-    _load_tk_icons($dirname);
-    _load_images($dirname);
-    _find_maps($dirname);
-}
+# FIXME: all of this is ugly and should go away
+_load_tk_icons($SHAREDIR);
+_load_images($SHAREDIR);
+_find_maps($SHAREDIR);
 
 
 1;
@@ -154,7 +152,7 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 SYNOPSIS
 

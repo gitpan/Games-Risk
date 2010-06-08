@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Startup;
 BEGIN {
-  $Games::Risk::GUI::Startup::VERSION = '3.101511';
+  $Games::Risk::GUI::Startup::VERSION = '3.101590';
 }
 # ABSTRACT: startup window
 
@@ -210,7 +210,8 @@ sub _onpriv_check_nb_players {
 #
 sub _onpriv_load_defaults {
     # FIXME: hardcoded
-    my @names  = ($ENV{USER}, shuffle @NAMES );
+    my $user   = $ENV{USER} // $ENV{USERNAME} //$ENV{LOGNAME}; # FIXME: use a module?
+    my @names  = ($user, shuffle @NAMES );
     my @types  = (T('Human'), (T('Computer, easy'))x1, (T('Computer, hard'))x2);
     my @colors = @COLORS;
     foreach my $i ( 0..$#types ) {
@@ -512,7 +513,7 @@ Games::Risk::GUI::Startup - startup window
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 SYNOPSIS
 

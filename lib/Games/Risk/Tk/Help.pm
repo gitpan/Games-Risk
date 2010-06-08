@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Tk::Help;
 BEGIN {
-  $Games::Risk::Tk::Help::VERSION = '3.101511';
+  $Games::Risk::Tk::Help::VERSION = '3.101590';
 }
 # ABSTRACT: prisk manual window
 
@@ -67,7 +67,7 @@ Games::Risk::Tk::Help - prisk manual window
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 DESCRIPTION
 

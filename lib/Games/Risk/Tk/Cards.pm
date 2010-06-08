@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Tk::Cards;
 BEGIN {
-  $Games::Risk::Tk::Cards::VERSION = '3.101511';
+  $Games::Risk::Tk::Cards::VERSION = '3.101590';
 }
 # ABSTRACT: cards listing
 
@@ -81,9 +81,6 @@ sub _build_hide      { T('Close') }
 sub START {
     my ($self, $s) = @_[OBJECT, SESSION];
     $K->alias_set('cards');
-
-    #--
-    $self->_w('ok')->configure(disabled);
 
     #-- trap some events
     my $top = $self->_toplevel;
@@ -354,6 +351,20 @@ sub _build_gui {
 
 
 #
+# $self->_finish_gui;
+#
+# called by tk:role:dialog to finish the inner dialog building.
+# needed because win32 somehow mixes START with BUILD. very strange...
+#
+sub _finish_gui {
+    my $self = shift;
+
+    # prevent validation button to be clicked.
+    $self->_w('ok')->configure(disabled);
+}
+
+
+#
 # $self->_valid;
 #
 # called by tk:role:dialog when clicking on exchange button to
@@ -380,7 +391,7 @@ Games::Risk::Tk::Cards - cards listing
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 DESCRIPTION
 

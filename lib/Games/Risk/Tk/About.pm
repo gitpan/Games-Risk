@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Tk::About;
 BEGIN {
-  $Games::Risk::Tk::About::VERSION = '3.101511';
+  $Games::Risk::Tk::About::VERSION = '3.101590';
 }
 # ABSTRACT: prisk about information
 
@@ -57,7 +57,7 @@ Games::Risk::Tk::About - prisk about information
 
 =head1 VERSION
 
-version 3.101511
+version 3.101590
 
 =head1 DESCRIPTION
 
