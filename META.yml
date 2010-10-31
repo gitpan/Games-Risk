@@ -3,15 +3,15 @@ abstract: "classical 'risk' board game"
 author:
   - 'Jerome Quelin'
 build_requires:
-  English: 0
   File::Find: 0
   File::Temp: 0
   Module::Build: 0.3601
   Scalar::Util: 0
-  Test::More: 0.88
+  Test::More: 0.94
 configure_requires:
   Module::Build: 0.3601
-generated_by: 'Dist::Zilla version 2.101151'
+dynamic_config: 0
+generated_by: 'Dist::Zilla version 4.102221, CPAN::Meta::Converter version 2.101670'
 license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -20,71 +20,70 @@ name: Games-Risk
 provides:
   Games::Risk:
     file: lib/Games/Risk.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::AI:
     file: lib/Games/Risk/AI.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::AI::Blitzkrieg:
     file: lib/Games/Risk/AI/Blitzkrieg.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::AI::Dumb:
     file: lib/Games/Risk/AI/Dumb.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::AI::Hegemon:
     file: lib/Games/Risk/AI/Hegemon.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Card:
     file: lib/Games/Risk/Card.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Continent:
     file: lib/Games/Risk/Continent.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Controller:
     file: lib/Games/Risk/Controller.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Country:
     file: lib/Games/Risk/Country.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::GUI:
     file: lib/Games/Risk/GUI.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::GUI::Board:
     file: lib/Games/Risk/GUI/Board.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::GUI::GameOver:
     file: lib/Games/Risk/GUI/GameOver.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::GUI::MoveArmies:
     file: lib/Games/Risk/GUI/MoveArmies.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::GUI::Startup:
     file: lib/Games/Risk/GUI/Startup.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::I18N:
     file: lib/Games/Risk/I18N.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Map:
     file: lib/Games/Risk/Map.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Player:
     file: lib/Games/Risk/Player.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Resources:
     file: lib/Games/Risk/Resources.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Tk::About:
     file: lib/Games/Risk/Tk/About.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Tk::Cards:
     file: lib/Games/Risk/Tk/Cards.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Tk::Continents:
     file: lib/Games/Risk/Tk/Continents.pm
-    version: 3.101590
+    version: 3.103040
   Games::Risk::Tk::Help:
     file: lib/Games/Risk/Tk/Help.pm
-    version: 3.101590
-recommends: {}
+    version: 3.103040
 requires:
   Carp: 0
   Class::Accessor::Fast: 0
@@ -128,191 +127,191 @@ resources:
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=Games-Risk
   homepage: http://search.cpan.org/dist/Games-Risk/
   repository: http://github.com/jquelin/games-risk
-version: 3.101590
+version: 3.103040
 x_Dist_Zilla:
   plugins:
     -
-      class: Dist::Zilla::Plugin::Prereq
+      class: Dist::Zilla::Plugin::Prereqs
       config:
-        Dist::Zilla::Plugin::Prereq:
+        Dist::Zilla::Plugin::Prereqs:
           phase: runtime
           type: requires
-      name: Prereq
-      version: 2.101151
+      name: Prereqs
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::AutoVersion
-      name: '@JQUELIN/AutoVersion'
-      version: 2.101151
+      name: '@Filter/AutoVersion'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::GatherDir
-      name: '@JQUELIN/GatherDir'
-      version: 2.101151
+      name: '@Filter/GatherDir'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::CompileTests
-      name: '@JQUELIN/CompileTests'
-      version: 1.100740
-    -
-      class: Dist::Zilla::Plugin::CriticTests
-      name: '@JQUELIN/CriticTests'
-      version: 1.100140
+      name: '@Filter/CompileTests'
+      version: 1.101800
     -
       class: Dist::Zilla::Plugin::HasVersionTests
-      name: '@JQUELIN/HasVersionTests'
-      version: 1.100700
+      name: '@Filter/HasVersionTests'
+      version: 1.101420
     -
       class: Dist::Zilla::Plugin::KwaliteeTests
-      name: '@JQUELIN/KwaliteeTests'
-      version: 1.100690
+      name: '@Filter/KwaliteeTests'
+      version: 1.101420
     -
       class: Dist::Zilla::Plugin::MetaTests
-      name: '@JQUELIN/MetaTests'
-      version: 2.101151
+      name: '@Filter/MetaTests'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::MinimumVersionTests
-      name: '@JQUELIN/MinimumVersionTests'
-      version: 1.100700
+      name: '@Filter/MinimumVersionTests'
+      version: 1.101421
     -
       class: Dist::Zilla::Plugin::PodCoverageTests
-      name: '@JQUELIN/PodCoverageTests'
-      version: 2.101151
+      name: '@Filter/PodCoverageTests'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::PodSyntaxTests
-      name: '@JQUELIN/PodSyntaxTests'
-      version: 2.101151
+      name: '@Filter/PodSyntaxTests'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::PortabilityTests
-      name: '@JQUELIN/PortabilityTests'
-      version: 1.100700
+      name: '@Filter/PortabilityTests'
+      version: 1.101420
     -
       class: Dist::Zilla::Plugin::ReportVersions
-      name: '@JQUELIN/ReportVersions'
-      version: 1.100880
+      name: '@Filter/ReportVersions'
+      version: 1.101700
     -
       class: Dist::Zilla::Plugin::UnusedVarsTests
-      name: '@JQUELIN/UnusedVarsTests'
+      name: '@Filter/UnusedVarsTests'
       version: 1.100860
     -
       class: Dist::Zilla::Plugin::PruneCruft
-      name: '@JQUELIN/PruneCruft'
-      version: 2.101151
+      name: '@Filter/PruneCruft'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::ManifestSkip
-      name: '@JQUELIN/ManifestSkip'
-      version: 2.101151
+      name: '@Filter/ManifestSkip'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::AutoPrereq
-      name: '@JQUELIN/AutoPrereq'
-      version: 2.101151
+      name: '@Filter/AutoPrereq'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::ExtraTests
-      name: '@JQUELIN/ExtraTests'
-      version: 2.101151
+      name: '@Filter/ExtraTests'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::NextRelease
-      name: '@JQUELIN/NextRelease'
-      version: 2.101151
+      name: '@Filter/NextRelease'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::PkgVersion
-      name: '@JQUELIN/PkgVersion'
-      version: 2.101151
+      name: '@Filter/PkgVersion'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::PodWeaver
-      name: '@JQUELIN/PodWeaver'
-      version: 3.100710
+      name: '@Filter/PodWeaver'
+      version: 3.101640
     -
       class: Dist::Zilla::Plugin::Prepender
-      name: '@JQUELIN/Prepender'
-      version: 1.100960
+      name: '@Filter/Prepender'
+      version: 1.101590
     -
       class: Dist::Zilla::Plugin::ExecDir
-      name: '@JQUELIN/ExecDir'
-      version: 2.101151
+      name: '@Filter/ExecDir'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::ShareDir
-      name: '@JQUELIN/ShareDir'
-      version: 2.101151
+      name: '@Filter/ShareDir'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::Bugtracker
-      name: '@JQUELIN/Bugtracker'
-      version: 1.100701
+      name: '@Filter/Bugtracker'
+      version: 1.101490
     -
       class: Dist::Zilla::Plugin::Homepage
-      name: '@JQUELIN/Homepage'
-      version: 1.100700
+      name: '@Filter/Homepage'
+      version: 1.101420
     -
       class: Dist::Zilla::Plugin::Repository
-      name: '@JQUELIN/Repository'
-      version: 0.11
+      name: '@Filter/Repository'
+      version: 0.13
     -
       class: Dist::Zilla::Plugin::MetaProvides::Package
-      name: '@JQUELIN/MetaProvides::Package'
-      version: 1.10001919
+      name: '@Filter/MetaProvides::Package'
+      version: 1.11034304
     -
       class: Dist::Zilla::Plugin::MetaConfig
-      name: '@JQUELIN/MetaConfig'
-      version: 2.101151
+      name: '@Filter/MetaConfig'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::License
-      name: '@JQUELIN/License'
-      version: 2.101151
+      name: '@Filter/License'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::MetaYAML
-      name: '@JQUELIN/MetaYAML'
-      version: 2.101151
+      name: '@Filter/MetaYAML'
+      version: 4.102221
+    -
+      class: Dist::Zilla::Plugin::MetaJSON
+      name: '@Filter/MetaJSON'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::ModuleBuild
-      name: '@JQUELIN/ModuleBuild'
-      version: 2.101151
+      name: '@Filter/ModuleBuild'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::Readme
-      name: '@JQUELIN/Readme'
-      version: 2.101151
+      name: '@Filter/Readme'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::Manifest
-      name: '@JQUELIN/Manifest'
-      version: 2.101151
+      name: '@Filter/Manifest'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::CheckChangeLog
-      name: '@JQUELIN/CheckChangeLog'
+      name: '@Filter/CheckChangeLog'
       version: 0.01
     -
       class: Dist::Zilla::Plugin::UploadToCPAN
-      name: '@JQUELIN/UploadToCPAN'
-      version: 2.101151
+      name: '@Filter/UploadToCPAN'
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::Git::Check
-      name: '@JQUELIN/Git/Check'
-      version: 1.100970
+      name: '@Filter/Git/Check'
+      version: 1.102090
     -
       class: Dist::Zilla::Plugin::Git::Commit
-      name: '@JQUELIN/Git/Commit'
-      version: 1.100970
+      name: '@Filter/Git/Commit'
+      version: 1.102090
     -
       class: Dist::Zilla::Plugin::Git::Tag
-      name: '@JQUELIN/Git/Tag'
-      version: 1.100970
+      name: '@Filter/Git/Tag'
+      version: 1.102090
     -
       class: Dist::Zilla::Plugin::Git::Push
-      name: '@JQUELIN/Git/Push'
-      version: 1.100970
+      name: '@Filter/Git/Push'
+      version: 1.102090
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':InstallModules'
-      version: 2.101151
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':TestFiles'
-      version: 2.101151
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':ExecFiles'
-      version: 2.101151
+      version: 4.102221
     -
       class: Dist::Zilla::Plugin::FinderCode
       name: ':ShareFiles'
-      version: 2.101151
+      version: 4.102221
   zilla:
-    class: Dist::Zilla
+    class: Dist::Zilla::Dist::Builder
     config:
       is_trial: 0
-    version: 2.101151
+    version: 4.102221

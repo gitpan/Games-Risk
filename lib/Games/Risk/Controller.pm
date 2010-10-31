@@ -1,19 +1,19 @@
-# 
+#
 # This file is part of Games-Risk
-# 
+#
 # This software is Copyright (c) 2008 by Jerome Quelin.
-# 
+#
 # This is free software, licensed under:
-# 
+#
 #   The GNU General Public License, Version 3, June 2007
-# 
+#
 use 5.010;
 use strict;
 use warnings;
 
 package Games::Risk::Controller;
 BEGIN {
-  $Games::Risk::Controller::VERSION = '3.101590';
+  $Games::Risk::Controller::VERSION = '3.103040';
 }
 # ABSTRACT: controller poe session for risk
 
@@ -754,7 +754,7 @@ Games::Risk::Controller - controller poe session for risk
 
 =head1 VERSION
 
-version 3.101590
+version 3.103040
 
 =head1 SYNOPSIS
 

@@ -1,19 +1,19 @@
-# 
+#
 # This file is part of Games-Risk
-# 
+#
 # This software is Copyright (c) 2008 by Jerome Quelin.
-# 
+#
 # This is free software, licensed under:
-# 
+#
 #   The GNU General Public License, Version 3, June 2007
-# 
+#
 use 5.010;
 use strict;
 use warnings;
 
 package Games::Risk::Resources;
 BEGIN {
-  $Games::Risk::Resources::VERSION = '3.101590';
+  $Games::Risk::Resources::VERSION = '3.103040';
 }
 # ABSTRACT: utility module to load bundled resources
 
@@ -152,7 +152,7 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.101590
+version 3.103040
 
 =head1 SYNOPSIS
 

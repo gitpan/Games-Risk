@@ -1,19 +1,19 @@
-# 
+#
 # This file is part of Games-Risk
-# 
+#
 # This software is Copyright (c) 2008 by Jerome Quelin.
-# 
+#
 # This is free software, licensed under:
-# 
+#
 #   The GNU General Public License, Version 3, June 2007
-# 
+#
 use 5.010;
 use strict;
 use warnings;
 
 package Games::Risk::GUI::MoveArmies;
 BEGIN {
-  $Games::Risk::GUI::MoveArmies::VERSION = '3.101590';
+  $Games::Risk::GUI::MoveArmies::VERSION = '3.103040';
 }
 # ABSTRACT: window to move armies
 
@@ -250,7 +250,7 @@ Games::Risk::GUI::MoveArmies - window to move armies
 
 =head1 VERSION
 
-version 3.101590
+version 3.103040
 
 =head1 DESCRIPTION
 

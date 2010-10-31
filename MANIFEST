@@ -4,6 +4,7 @@ HACKING
 LICENSE
 MANIFEST
 MANIFEST.SKIP
+META.json
 META.yml
 README
 bin/prisk
@@ -31,6 +32,7 @@ lib/Games/Risk/Tk/Cards.pm
 lib/Games/Risk/Tk/Continents.pm
 lib/Games/Risk/Tk/Help.pm
 lib/LocaleData/Games-Risk-messages.pot
+lib/LocaleData/de/LC_MESSAGES/Games-Risk.po
 lib/LocaleData/fr/LC_MESSAGES/Games-Risk.mo
 lib/LocaleData/fr/LC_MESSAGES/Games-Risk.po
 share/icons/16/about.png
@@ -85,7 +87,6 @@ share/maps/roman_empire_map.gif
 share/maps/roman_empire_pic.png
 t/00-compile.t
 t/000-report-versions.t
-t/author-critic.t
 t/release-distmeta.t
 t/release-has-version.t
 t/release-kwalitee.t
