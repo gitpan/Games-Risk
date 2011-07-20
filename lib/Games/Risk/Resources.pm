@@ -13,27 +13,23 @@ use warnings;
 
 package Games::Risk::Resources;
 BEGIN {
-  $Games::Risk::Resources::VERSION = '3.103040';
+  $Games::Risk::Resources::VERSION = '3.112010';
 }
 # ABSTRACT: utility module to load bundled resources
 
 use POE            qw{ Loop::Tk };
 use File::Basename qw{ basename };
-use File::ShareDir qw{ dist_dir };
 use File::Spec::Functions;
-use FindBin        qw{ $Bin };
-use Path::Class;
-use Readonly;
 use Tk;
 use Tk::JPEG;
 use Tk::PNG;
 
+use Games::Risk::Utils qw{ $SHAREDIR };
+
 
 use base qw{ Exporter };
-our @EXPORT_OK = qw{ image map_path maps $SHAREDIR };
+our @EXPORT_OK = qw{ get_image map_path maps };
 my (%images, %maps);
-
-Readonly our $SHAREDIR => _find_sharedir();
 
 
 #--
@@ -42,11 +38,11 @@ Readonly our $SHAREDIR => _find_sharedir();
 # -- public subs
 
 #
-# my $img = image( $name );
+# my $img = get_image( $name );
 #
 # return the Tk image called $name.
 #
-sub image {
+sub get_image {
     return $images{ $_[0] };
 }
 
@@ -87,12 +83,6 @@ sub _find_maps {
     %maps = map { ( basename($_,qw{.map}) => $_ ) } glob $glob;
 }
 
-sub _find_sharedir {
-    my $root = dir($Bin)->parent;
-    return $root->subdir('share') if -f $root->file('dist.ini');
-    return dir( dist_dir( 'Games-Risk' ) );
-}
-
 
 #
 # _load_images( $dirname );
@@ -119,7 +109,7 @@ sub _load_images {
 sub _load_tk_icons {
     my ($dirname) = @_;
 
-    my $path = catfile($dirname, 'images', 'tk_icons');
+    my $path = $dirname->file( 'images', 'tk_icons');
     open my $fh, '<', $path or die "can't open '$path': $!";
     while (<$fh>) {
         chomp;
@@ -152,12 +142,12 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
     use Games::Risk::Resources qw{ image };
-    my $image = image('actexit16');
+    my $image = get_image('actexit16');
 
 =head1 DESCRIPTION
 
@@ -181,7 +171,7 @@ C<$poe_main_window>.
 
 =over 4
 
-=item my $img = image( $name )
+=item my $img = get_image( $name )
 
 Return the Tk image called C<$name>. It can be directly used within Tk.
 
@@ -209,7 +199,7 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

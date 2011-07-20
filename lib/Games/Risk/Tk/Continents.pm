@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Tk::Continents;
 BEGIN {
-  $Games::Risk::Tk::Continents::VERSION = '3.103040';
+  $Games::Risk::Tk::Continents::VERSION = '3.112010';
 }
 # ABSTRACT: continents information
 
@@ -30,8 +30,8 @@ use Tk::Role::Dialog       1.101480;
 use Tk::Sugar;
 use Tk::TableMatrix;
 
-use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ image $SHAREDIR };
+use Games::Risk::I18n  qw{ T };
+use Games::Risk::Utils qw{ $SHAREDIR };
 
 with 'Tk::Role::Dialog';
 
@@ -224,7 +224,7 @@ Games::Risk::Tk::Continents - continents information
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 DESCRIPTION
 
@@ -274,7 +274,7 @@ Request window to be hidden / shown depending on its previous state.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::Startup;
 BEGIN {
-  $Games::Risk::GUI::Startup::VERSION = '3.103040';
+  $Games::Risk::GUI::Startup::VERSION = '3.112010';
 }
 # ABSTRACT: startup window
 
@@ -27,8 +27,9 @@ use Tk::BrowseEntry;
 use Tk::Font;
 use Tk::Sugar;
 
-use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ image maps $SHAREDIR };
+use Games::Risk::I18n      qw{ T };
+use Games::Risk::Resources qw{ get_image maps };
+use Games::Risk::Utils     qw{ $SHAREDIR };
 
 use constant K => $poe_kernel;
 
@@ -262,10 +263,10 @@ sub _onpriv_new_player {
         -fg               => 'white',
         -activebackground => $color,
         -activeforeground => 'white',
-        -image            => image('paintbrush'),
+        -image            => get_image('paintbrush'),
         -command          => $s->postback('_but_color', $num),
     )->pack(left);
-    my $ld = $fpl->Label(-image=>image('fileclose16'))->pack(left);
+    my $ld = $fpl->Label(-image=>get_image('fileclose16'))->pack(left);
     $ld->bind('<1>', $s->postback('_but_delete', $num));
     $players->[$num]{be_type}   = $be;
     $players->[$num]{but_color} = $bc;
@@ -513,7 +514,7 @@ Games::Risk::GUI::Startup - startup window
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
@@ -534,7 +535,7 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

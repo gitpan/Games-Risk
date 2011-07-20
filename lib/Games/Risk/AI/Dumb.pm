@@ -13,11 +13,11 @@ use warnings;
 
 package Games::Risk::AI::Dumb;
 BEGIN {
-  $Games::Risk::AI::Dumb::VERSION = '3.103040';
+  $Games::Risk::AI::Dumb::VERSION = '3.112010';
 }
 # ABSTRACT: dumb ai that does nothing
 
-use Games::Risk::I18N qw{ T };
+use Games::Risk::I18n qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -110,7 +110,7 @@ Games::Risk::AI::Dumb - dumb ai that does nothing
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
@@ -146,7 +146,7 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

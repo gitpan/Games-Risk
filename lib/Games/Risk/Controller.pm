@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Controller;
 BEGIN {
-  $Games::Risk::Controller::VERSION = '3.103040';
+  $Games::Risk::Controller::VERSION = '3.112010';
 }
 # ABSTRACT: controller poe session for risk
 
@@ -21,7 +21,7 @@ use POE             qw{ Loop::Tk };
 use List::Util      qw{ min shuffle };
 use Readonly;
 
-use Games::Risk::I18N      qw{ T };
+use Games::Risk::I18n      qw{ T };
 use Games::Risk::Map;
 use Games::Risk::Player;
 use Games::Risk::Resources qw{ map_path };
@@ -754,7 +754,7 @@ Games::Risk::Controller - controller poe session for risk
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
@@ -782,7 +782,7 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

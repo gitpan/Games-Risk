@@ -4,7 +4,7 @@
       "Jerome Quelin"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.102221, CPAN::Meta::Converter version 2.101670",
+   "generated_by" : "Dist::Zilla version 4.200009, CPAN::Meta::Converter version 2.110930",
    "license" : [
       "gpl_3"
    ],
@@ -30,10 +30,11 @@
             "Class::Accessor::Fast" : 0,
             "Encode" : 0,
             "Exporter" : 0,
+            "Exporter::Lite" : 0,
             "File::Basename" : 0,
-            "File::ShareDir" : 0,
+            "File::ShareDir::PathClass" : 0,
             "File::Spec::Functions" : 0,
-            "FindBin" : 0,
+            "Find::Lib" : 0,
             "Image::Magick" : 0,
             "Image::Size" : 0,
             "List::MoreUtils" : 0,
@@ -48,7 +49,6 @@
             "POE::Loop::Tk" : 0,
             "Path::Class" : 0,
             "Readonly" : 0,
-            "Sub::Exporter" : 0,
             "Tk" : 0,
             "Tk::Balloon" : 0,
             "Tk::BrowseEntry" : 0,
@@ -70,99 +70,102 @@
          "requires" : {
             "File::Find" : 0,
             "File::Temp" : 0,
-            "Scalar::Util" : 0,
-            "Test::More" : "0.94"
+            "Test::More" : "0.88"
          }
       }
    },
    "provides" : {
       "Games::Risk" : {
          "file" : "lib/Games/Risk.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::AI" : {
          "file" : "lib/Games/Risk/AI.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::AI::Blitzkrieg" : {
          "file" : "lib/Games/Risk/AI/Blitzkrieg.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::AI::Dumb" : {
          "file" : "lib/Games/Risk/AI/Dumb.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::AI::Hegemon" : {
          "file" : "lib/Games/Risk/AI/Hegemon.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Card" : {
          "file" : "lib/Games/Risk/Card.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Continent" : {
          "file" : "lib/Games/Risk/Continent.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Controller" : {
          "file" : "lib/Games/Risk/Controller.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Country" : {
          "file" : "lib/Games/Risk/Country.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::GUI" : {
          "file" : "lib/Games/Risk/GUI.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::GUI::Board" : {
          "file" : "lib/Games/Risk/GUI/Board.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::GUI::GameOver" : {
          "file" : "lib/Games/Risk/GUI/GameOver.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::GUI::MoveArmies" : {
          "file" : "lib/Games/Risk/GUI/MoveArmies.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::GUI::Startup" : {
          "file" : "lib/Games/Risk/GUI/Startup.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
-      "Games::Risk::I18N" : {
-         "file" : "lib/Games/Risk/I18N.pm",
-         "version" : "3.103040"
+      "Games::Risk::I18n" : {
+         "file" : "lib/Games/Risk/I18n.pm",
+         "version" : "3.112010"
       },
       "Games::Risk::Map" : {
          "file" : "lib/Games/Risk/Map.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Player" : {
          "file" : "lib/Games/Risk/Player.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Resources" : {
          "file" : "lib/Games/Risk/Resources.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Tk::About" : {
          "file" : "lib/Games/Risk/Tk/About.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Tk::Cards" : {
          "file" : "lib/Games/Risk/Tk/Cards.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Tk::Continents" : {
          "file" : "lib/Games/Risk/Tk/Continents.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
       },
       "Games::Risk::Tk::Help" : {
          "file" : "lib/Games/Risk/Tk/Help.pm",
-         "version" : "3.103040"
+         "version" : "3.112010"
+      },
+      "Games::Risk::Utils" : {
+         "file" : "lib/Games/Risk/Utils.pm",
+         "version" : "3.112010"
       }
    },
    "release_status" : "stable",
@@ -173,10 +176,12 @@
       },
       "homepage" : "http://search.cpan.org/dist/Games-Risk/",
       "repository" : {
-         "url" : "http://github.com/jquelin/games-risk"
+         "type" : "git",
+         "url" : "git://github.com/jquelin/games-risk.git",
+         "web" : "http://github.com/jquelin/games-risk"
       }
    },
-   "version" : "3.103040",
+   "version" : "3.112010",
    "x_Dist_Zilla" : {
       "plugins" : [
          {
@@ -188,222 +193,232 @@
                }
             },
             "name" : "Prereqs",
-            "version" : "4.102221"
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::AutoVersion",
-            "name" : "@Filter/AutoVersion",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/AutoVersion",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::GatherDir",
-            "name" : "@Filter/GatherDir",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/GatherDir",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::CompileTests",
-            "name" : "@Filter/CompileTests",
-            "version" : "1.101800"
+            "name" : "@JQUELIN/CompileTests",
+            "version" : "1.110930"
          },
          {
             "class" : "Dist::Zilla::Plugin::HasVersionTests",
-            "name" : "@Filter/HasVersionTests",
+            "name" : "@JQUELIN/HasVersionTests",
             "version" : "1.101420"
          },
          {
             "class" : "Dist::Zilla::Plugin::KwaliteeTests",
-            "name" : "@Filter/KwaliteeTests",
+            "name" : "@JQUELIN/KwaliteeTests",
             "version" : "1.101420"
          },
          {
-            "class" : "Dist::Zilla::Plugin::MetaTests",
-            "name" : "@Filter/MetaTests",
-            "version" : "4.102221"
-         },
-         {
             "class" : "Dist::Zilla::Plugin::MinimumVersionTests",
-            "name" : "@Filter/MinimumVersionTests",
+            "name" : "@JQUELIN/MinimumVersionTests",
             "version" : "1.101421"
          },
          {
             "class" : "Dist::Zilla::Plugin::PodCoverageTests",
-            "name" : "@Filter/PodCoverageTests",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/PodCoverageTests",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::PodSyntaxTests",
-            "name" : "@Filter/PodSyntaxTests",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/PodSyntaxTests",
+            "version" : "4.200009"
          },
          {
-            "class" : "Dist::Zilla::Plugin::PortabilityTests",
-            "name" : "@Filter/PortabilityTests",
-            "version" : "1.101420"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::ReportVersions",
-            "name" : "@Filter/ReportVersions",
-            "version" : "1.101700"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::UnusedVarsTests",
-            "name" : "@Filter/UnusedVarsTests",
-            "version" : "1.100860"
+            "class" : "Dist::Zilla::Plugin::ReportVersions::Tiny",
+            "name" : "@JQUELIN/ReportVersions::Tiny",
+            "version" : "1.03"
          },
          {
             "class" : "Dist::Zilla::Plugin::PruneCruft",
-            "name" : "@Filter/PruneCruft",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/PruneCruft",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PruneFiles",
+            "name" : "@JQUELIN/PruneFiles",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::ManifestSkip",
-            "name" : "@Filter/ManifestSkip",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/ManifestSkip",
+            "version" : "4.200009"
          },
          {
-            "class" : "Dist::Zilla::Plugin::AutoPrereq",
-            "name" : "@Filter/AutoPrereq",
-            "version" : "4.102221"
+            "class" : "Dist::Zilla::Plugin::AutoPrereqs",
+            "name" : "@JQUELIN/AutoPrereqs",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::ExtraTests",
-            "name" : "@Filter/ExtraTests",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/ExtraTests",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::NextRelease",
-            "name" : "@Filter/NextRelease",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/NextRelease",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::PkgVersion",
-            "name" : "@Filter/PkgVersion",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/PkgVersion",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::PodWeaver",
-            "name" : "@Filter/PodWeaver",
-            "version" : "3.101640"
+            "name" : "@JQUELIN/PodWeaver",
+            "version" : "3.101641"
          },
          {
             "class" : "Dist::Zilla::Plugin::Prepender",
-            "name" : "@Filter/Prepender",
-            "version" : "1.101590"
+            "name" : "@JQUELIN/Prepender",
+            "version" : "1.103470"
          },
          {
             "class" : "Dist::Zilla::Plugin::ExecDir",
-            "name" : "@Filter/ExecDir",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/ExecDir",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::ShareDir",
-            "name" : "@Filter/ShareDir",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/ShareDir",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::Bugtracker",
-            "name" : "@Filter/Bugtracker",
-            "version" : "1.101490"
+            "name" : "@JQUELIN/Bugtracker",
+            "version" : "1.111080"
          },
          {
             "class" : "Dist::Zilla::Plugin::Homepage",
-            "name" : "@Filter/Homepage",
+            "name" : "@JQUELIN/Homepage",
             "version" : "1.101420"
          },
          {
             "class" : "Dist::Zilla::Plugin::Repository",
-            "name" : "@Filter/Repository",
-            "version" : "0.13"
+            "name" : "@JQUELIN/Repository",
+            "version" : "0.18"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaProvides::Package",
-            "name" : "@Filter/MetaProvides::Package",
-            "version" : "1.11034304"
+            "name" : "@JQUELIN/MetaProvides::Package",
+            "version" : "1.12060501"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaConfig",
-            "name" : "@Filter/MetaConfig",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/MetaConfig",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::License",
-            "name" : "@Filter/License",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/License",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaYAML",
-            "name" : "@Filter/MetaYAML",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/MetaYAML",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::MetaJSON",
-            "name" : "@Filter/MetaJSON",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/MetaJSON",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::ModuleBuild",
-            "name" : "@Filter/ModuleBuild",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/ModuleBuild",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::Readme",
-            "name" : "@Filter/Readme",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/Readme",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::Manifest",
-            "name" : "@Filter/Manifest",
-            "version" : "4.102221"
+            "name" : "@JQUELIN/Manifest",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::CheckChangeLog",
-            "name" : "@Filter/CheckChangeLog",
+            "name" : "@JQUELIN/CheckChangeLog",
             "version" : "0.01"
          },
          {
-            "class" : "Dist::Zilla::Plugin::UploadToCPAN",
-            "name" : "@Filter/UploadToCPAN",
-            "version" : "4.102221"
-         },
-         {
             "class" : "Dist::Zilla::Plugin::Git::Check",
-            "name" : "@Filter/Git/Check",
-            "version" : "1.102090"
+            "name" : "@JQUELIN/Git::Check",
+            "version" : "1.111590"
          },
          {
             "class" : "Dist::Zilla::Plugin::Git::Commit",
-            "name" : "@Filter/Git/Commit",
-            "version" : "1.102090"
+            "name" : "@JQUELIN/Git::Commit",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::CommitBuild",
+            "name" : "@JQUELIN/Git::CommitBuild",
+            "version" : "1.111590"
          },
          {
             "class" : "Dist::Zilla::Plugin::Git::Tag",
-            "name" : "@Filter/Git/Tag",
-            "version" : "1.102090"
+            "name" : "@JQUELIN/TagMaster",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::Tag",
+            "name" : "@JQUELIN/TagRelease",
+            "version" : "1.111590"
          },
          {
             "class" : "Dist::Zilla::Plugin::Git::Push",
-            "name" : "@Filter/Git/Push",
-            "version" : "1.102090"
+            "name" : "@JQUELIN/Git::Push",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::UploadToCPAN",
+            "name" : "@JQUELIN/UploadToCPAN",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":InstallModules",
-            "version" : "4.102221"
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":IncModules",
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":TestFiles",
-            "version" : "4.102221"
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":ExecFiles",
-            "version" : "4.102221"
+            "version" : "4.200009"
          },
          {
             "class" : "Dist::Zilla::Plugin::FinderCode",
             "name" : ":ShareFiles",
-            "version" : "4.102221"
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":MainModule",
+            "version" : "4.200009"
          }
       ],
       "zilla" : {
@@ -411,7 +426,7 @@
          "config" : {
             "is_trial" : 0
          },
-         "version" : "4.102221"
+         "version" : "4.200009"
       }
    }
 }

@@ -13,13 +13,13 @@ use warnings;
 
 package Games::Risk::AI::Hegemon;
 BEGIN {
-  $Games::Risk::AI::Hegemon::VERSION = '3.103040';
+  $Games::Risk::AI::Hegemon::VERSION = '3.112010';
 }
 # ABSTRACT: ai that tries to conquer the world
 
 use List::MoreUtils qw{ all };
 
-use Games::Risk::I18N qw{ T };
+use Games::Risk::I18n qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -550,7 +550,7 @@ Games::Risk::AI::Hegemon - ai that tries to conquer the world
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
@@ -593,7 +593,7 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

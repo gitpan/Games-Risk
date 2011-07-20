@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::GUI::GameOver;
 BEGIN {
-  $Games::Risk::GUI::GameOver::VERSION = '3.103040';
+  $Games::Risk::GUI::GameOver::VERSION = '3.112010';
 }
 # ABSTRACT: window used when game is over
 
@@ -22,7 +22,7 @@ use Tk;
 use Tk::Font;
 use Tk::Sugar;
 
-use Games::Risk::I18N qw{ T };
+use Games::Risk::I18n qw{ T };
 
 use constant K => $poe_kernel;
 
@@ -139,7 +139,7 @@ Games::Risk::GUI::GameOver - window used when game is over
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 DESCRIPTION
 
@@ -181,7 +181,7 @@ L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -13,13 +13,13 @@ use warnings;
 
 package Games::Risk::AI::Blitzkrieg;
 BEGIN {
-  $Games::Risk::AI::Blitzkrieg::VERSION = '3.103040';
+  $Games::Risk::AI::Blitzkrieg::VERSION = '3.112010';
 }
 # ABSTRACT: easy ai that does blitzkrieg attacks
 
 use List::Util qw{ shuffle };
 
-use Games::Risk::I18N qw{ T };
+use Games::Risk::I18n qw{ T };
 
 use base qw{ Games::Risk::AI };
 
@@ -163,7 +163,7 @@ Games::Risk::AI::Blitzkrieg - easy ai that does blitzkrieg attacks
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 SYNOPSIS
 
@@ -202,7 +202,7 @@ L<Games::Risk::AI>, L<Games::Risk>.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 

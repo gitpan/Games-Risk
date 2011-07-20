@@ -13,7 +13,7 @@ use warnings;
 
 package Games::Risk::Tk::Help;
 BEGIN {
-  $Games::Risk::Tk::Help::VERSION = '3.103040';
+  $Games::Risk::Tk::Help::VERSION = '3.112010';
 }
 # ABSTRACT: prisk manual window
 
@@ -23,8 +23,8 @@ use Tk::Pod::Text;
 use Tk::Role::Dialog 1.101480;
 use Tk::Sugar;
 
-use Games::Risk::I18N      qw{ T };
-use Games::Risk::Resources qw{ $SHAREDIR };
+use Games::Risk::I18n  qw{ T };
+use Games::Risk::Utils qw{ $SHAREDIR };
 
 with 'Tk::Role::Dialog';
 
@@ -67,7 +67,7 @@ Games::Risk::Tk::Help - prisk manual window
 
 =head1 VERSION
 
-version 3.103040
+version 3.112010
 
 =head1 DESCRIPTION
 
@@ -92,7 +92,7 @@ attributes for available options.
 
 =head1 AUTHOR
 
-  Jerome Quelin
+Jerome Quelin
 
 =head1 COPYRIGHT AND LICENSE
 
