@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Tk::Help;
-{
-  $Games::Risk::Tk::Help::VERSION = '3.112820';
-}
 # ABSTRACT: prisk manual window
-
+$Games::Risk::Tk::Help::VERSION = '4.000';
 use Moose;
 use Path::Class;
 use Tk::Pod::Text;
@@ -57,6 +54,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -66,7 +64,7 @@ Games::Risk::Tk::Help - prisk manual window
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -102,8 +100,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-

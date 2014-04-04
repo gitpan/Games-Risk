@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::I18n;
-{
-  $Games::Risk::I18n::VERSION = '3.112820';
-}
 # ABSTRACT: internationalization utilities for prisk
-
+$Games::Risk::I18n::VERSION = '4.000';
 # should come before locale::textdomain use
 use Games::Risk::Utils qw{ $SHAREDIR };
 
@@ -35,6 +32,7 @@ sub T { return decode('utf8', __($_[0])); }
 
 1;
 
+__END__
 
 =pod
 
@@ -44,7 +42,7 @@ Games::Risk::I18n - internationalization utilities for prisk
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -78,7 +76,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

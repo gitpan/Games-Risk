@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Resources;
-{
-  $Games::Risk::Resources::VERSION = '3.112820';
-}
 # ABSTRACT: utility module to load bundled resources
-
+$Games::Risk::Resources::VERSION = '4.000';
 use POE            qw{ Loop::Tk };
 use File::Basename qw{ basename };
 use File::Spec::Functions;
@@ -132,7 +129,7 @@ _find_maps($SHAREDIR);
 
 1;
 
-
+__END__
 
 =pod
 
@@ -142,7 +139,7 @@ Games::Risk::Resources - utility module to load bundled resources
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -210,8 +207,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-

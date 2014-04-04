@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Tk::Main;
-{
-  $Games::Risk::Tk::Main::VERSION = '3.112820';
-}
 # ABSTRACT: main prisk window
-
+$Games::Risk::Tk::Main::VERSION = '4.000';
 use POE          qw{ Loop::Tk };
 use Image::Magick;
 use Image::Size  qw{ imgsize };
@@ -524,20 +521,15 @@ sub START {
 
         # associate tooltip
         my $tooltip = $player->name // '';
-        given ($player->type) {
-            when ('human') {
-                $tooltip .= ' (' . T('human') . ')';
-            }
-
-            when ('ai') {
-                my $ai = $player->ai;
-                my $difficulty  = $ai->difficulty;
-                my $description = $ai->description;
-                $tooltip .= ' (' . sprintf(T('computer - %s'), $difficulty). ")\n$description";
-            }
-
-            default { $tooltip = '?'; }
-        }
+        my $type = $player->type;
+        if ( $type eq 'human' ) {
+            $tooltip .= ' (' . T('human') . ')';
+        } elsif ( $type eq 'ai' ) {
+            my $ai = $player->ai;
+            my $difficulty  = $ai->difficulty;
+            my $description = $ai->description;
+            $tooltip .= ' (' . sprintf(T('computer - %s'), $difficulty). ")\n$description";
+        } else { $tooltip = '?'; }
         $self->_w('tooltip')->attach($label, -msg=>$tooltip);
     };
 
@@ -1445,6 +1437,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -1454,7 +1447,7 @@ Games::Risk::Tk::Main - main prisk window
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -1590,7 +1583,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

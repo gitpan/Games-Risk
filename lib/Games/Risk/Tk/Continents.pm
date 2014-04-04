@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Tk::Continents;
-{
-  $Games::Risk::Tk::Continents::VERSION = '3.112820';
-}
 # ABSTRACT: continents information
-
+$Games::Risk::Tk::Continents::VERSION = '4.000';
 use POE                    qw{ Loop::Tk };
 use List::MoreUtils        qw{ firstidx };
 use List::Util             qw{ max };
@@ -219,6 +216,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -228,7 +226,7 @@ Games::Risk::Tk::Continents - continents information
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -290,7 +288,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

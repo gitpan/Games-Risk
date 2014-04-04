@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Utils;
-{
-  $Games::Risk::Utils::VERSION = '3.112820';
-}
 # ABSTRACT: various utilities for prisk
-
+$Games::Risk::Utils::VERSION = '4.000';
 use Exporter::Lite;
 use File::ShareDir::PathClass;
 use Path::Class;
@@ -29,6 +26,7 @@ our $SHAREDIR = -e file("dist.ini") && file("dist.ini")->slurp !~ /Maps/
 
 1;
 
+__END__
 
 =pod
 
@@ -38,7 +36,7 @@ Games::Risk::Utils - various utilities for prisk
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -58,7 +56,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

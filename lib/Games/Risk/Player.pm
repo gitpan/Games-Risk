@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Player;
-{
-  $Games::Risk::Player::VERSION = '3.112820';
-}
 # ABSTRACT: risk player
-
+$Games::Risk::Player::VERSION = '4.000';
 use POE qw{ Loop::Tk };
 use List::Util qw{ sum };
 use Moose;
@@ -58,17 +55,16 @@ sub BUILD {
     my $self = shift;
 
     # update other object attributes
-    given ( $self->type ) {
-        when ('human') {
-            $K->post('risk', 'player_created', $self);
-        }
-        when ('ai') {
-            my $ai_class = $self->ai_class;
-            $ai_class->require;
-            my $ai = $ai_class->new({ player=>$self });
-            Games::Risk::AI->spawn($ai);
-            $self->set_ai($ai);
-        }
+    my $type = $self->type;
+    if ( $type eq 'human' ) {
+        $K->post('risk', 'player_created', $self);
+    }
+    elsif ( $type eq 'ai' ) {
+        my $ai_class = $self->ai_class;
+        $ai_class->require;
+        my $ai = $ai_class->new({ player=>$self });
+        Games::Risk::AI->spawn($ai);
+        $self->set_ai($ai);
     }
 }
 
@@ -98,6 +94,7 @@ sub greatness {
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -107,7 +104,7 @@ Games::Risk::Player - risk player
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -171,7 +168,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Country;
-{
-  $Games::Risk::Country::VERSION = '3.112820';
-}
 # ABSTRACT: map country
-
+$Games::Risk::Country::VERSION = '4.000';
 use Hash::NoRef;
 use List::AllUtils qw{ any };
 use Moose;
@@ -82,6 +79,7 @@ sub _build__neighbours {
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -91,7 +89,7 @@ Games::Risk::Country - map country
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -170,7 +168,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

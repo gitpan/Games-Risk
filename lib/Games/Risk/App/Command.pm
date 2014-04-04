@@ -12,16 +12,14 @@ use strict;
 use warnings;
 
 package Games::Risk::App::Command;
-{
-  $Games::Risk::App::Command::VERSION = '3.112820';
-}
 # ABSTRACT: base class for prisk sub-commands
-
+$Games::Risk::App::Command::VERSION = '4.000';
 use App::Cmd::Setup -command;
 
 
 1;
 
+__END__
 
 =pod
 
@@ -31,7 +29,7 @@ Games::Risk::App::Command - base class for prisk sub-commands
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -55,7 +53,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

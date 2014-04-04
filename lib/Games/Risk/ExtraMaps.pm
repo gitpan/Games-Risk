@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::ExtraMaps;
-{
-  $Games::Risk::ExtraMaps::VERSION = '3.112820';
-}
 # ABSTRACT: base class for exta maps
-
+$Games::Risk::ExtraMaps::VERSION = '4.000';
 use File::ShareDir::PathClass;
 use Moose;
 use Path::Class;
@@ -44,6 +41,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -53,7 +51,7 @@ Games::Risk::ExtraMaps - base class for exta maps
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -80,7 +78,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

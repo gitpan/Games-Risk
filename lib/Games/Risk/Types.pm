@@ -12,18 +12,16 @@ use strict;
 use warnings;
 
 package Games::Risk::Types;
-{
-  $Games::Risk::Types::VERSION = '3.112820';
-}
 # ABSTRACT: various types used in the distribution
-
+$Games::Risk::Types::VERSION = '4.000';
 use Moose::Util::TypeConstraints;
 
-enum CardType   => qw{ artillery cavalry infantry joker };
-enum PlayerType => qw{ human ai };
+enum CardType   => [qw{ artillery cavalry infantry joker }];
+enum PlayerType => [qw{ human ai }];
 
 1;
 
+__END__
 
 =pod
 
@@ -33,7 +31,7 @@ Games::Risk::Types - various types used in the distribution
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -63,7 +61,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

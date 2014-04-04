@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::AI::Blitzkrieg;
-{
-  $Games::Risk::AI::Blitzkrieg::VERSION = '3.112820';
-}
 # ABSTRACT: easy ai that does blitzkrieg attacks
-
+$Games::Risk::AI::Blitzkrieg::VERSION = '4.000';
 use List::Util qw{ shuffle };
 
 use Games::Risk::I18n qw{ T };
@@ -153,7 +150,7 @@ sub _description {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -163,7 +160,7 @@ Games::Risk::AI::Blitzkrieg - easy ai that does blitzkrieg attacks
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -213,10 +210,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-
-
-

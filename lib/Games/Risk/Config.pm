@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Config;
-{
-  $Games::Risk::Config::VERSION = '3.112820';
-}
 # ABSTRACT: prisk configuration
-
+$Games::Risk::Config::VERSION = '4.000';
 use Exporter::Lite;
 use File::HomeDir::PathClass  qw{ my_dist_config };
 use MooseX::Singleton;  # should come before any other moose
@@ -90,6 +87,7 @@ sub set {
 
 1;
 
+__END__
 
 =pod
 
@@ -99,7 +97,7 @@ Games::Risk::Config - prisk configuration
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -148,7 +146,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

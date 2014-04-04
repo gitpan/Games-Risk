@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::AI::Hegemon;
-{
-  $Games::Risk::AI::Hegemon::VERSION = '3.112820';
-}
 # ABSTRACT: ai that tries to conquer the world
-
+$Games::Risk::AI::Hegemon::VERSION = '4.000';
 use List::MoreUtils qw{ all };
 
 use Games::Risk::I18n qw{ T };
@@ -207,11 +204,9 @@ sub attack_move {
     return $max unless $self->_owns_mostly($continent);
 
     # attempt to safeguard critical areas when moving armies.
-    given ( $nbsrc ) {
-        when($_>8)            { return $max-4; }
-        when($_>5 && $_<=7)   { return 4; }
-        default               { return 3; }
-    }
+    if    ( $nbsrc > 8 )                { return $max-4; }
+    elsif ( $nbsrc > 5 && $nbsrc <= 7 ) { return 4; }
+    else  { return 3; }
 }
 
 
@@ -540,7 +535,7 @@ sub _short_path_to_continent {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -550,7 +545,7 @@ Games::Risk::AI::Hegemon - ai that tries to conquer the world
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -604,8 +599,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-

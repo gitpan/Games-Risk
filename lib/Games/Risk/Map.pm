@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Map;
-{
-  $Games::Risk::Map::VERSION = '3.112820';
-}
 # ABSTRACT: map being played
-
+$Games::Risk::Map::VERSION = '4.000';
 use Hash::NoRef;
 use List::Util      qw{ shuffle };
 use List::MoreUtils qw{ uniq };
@@ -182,6 +179,7 @@ sub continents_owned {
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -191,7 +189,7 @@ Games::Risk::Map - map being played
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -290,7 +288,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

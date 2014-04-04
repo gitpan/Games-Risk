@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::App;
-{
-  $Games::Risk::App::VERSION = '3.112820';
-}
 # ABSTRACT: prisk's App::Cmd
-
+$Games::Risk::App::VERSION = '4.000';
 use App::Cmd::Setup -app;
 
 sub allow_any_unambiguous_abbrev { 1 }
@@ -24,6 +21,7 @@ sub default_args                 { [ 'play' ] }
 
 1;
 
+__END__
 
 =pod
 
@@ -33,7 +31,7 @@ Games::Risk::App - prisk's App::Cmd
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -60,7 +58,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

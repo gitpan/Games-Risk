@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::GUI::Startup;
-{
-  $Games::Risk::GUI::Startup::VERSION = '3.112820';
-}
 # ABSTRACT: startup window
-
+$Games::Risk::GUI::Startup::VERSION = '4.000';
 use POE             qw{ Loop::Tk };
 use List::Util      qw{ shuffle };
 use List::MoreUtils qw{ any };
@@ -504,7 +501,7 @@ sub _ongui_but_start {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -514,7 +511,7 @@ Games::Risk::GUI::Startup - startup window
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -546,9 +543,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-
-

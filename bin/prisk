@@ -14,11 +14,8 @@ use strict;
 use warnings;
 
 package prisk;
-{
-  $prisk::VERSION = '3.112820';
-}
 # ABSTRACT: classical Risk game written in perl
-
+$prisk::VERSION = '4.000';
 # terse error messages
 $ENV{MOOSE_ERROR_STYLE} = "croak";
 
@@ -29,7 +26,7 @@ use Games::Risk::App;
 Games::Risk::App->run;
 exit;
 
-
+__END__
 
 =pod
 
@@ -39,7 +36,7 @@ prisk - classical Risk game written in perl
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -71,7 +68,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

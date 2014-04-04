@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Deck;
-{
-  $Games::Risk::Deck::VERSION = '3.112820';
-}
 # ABSTRACT: pandemic card deck
-
+$Games::Risk::Deck::VERSION = '4.000';
 use Moose 0.92;
 use MooseX::Has::Sugar;
 use MooseX::SemiAffordanceAccessor;
@@ -64,6 +61,7 @@ __PACKAGE__->meta->make_immutable;
 
 1;
 
+__END__
 
 =pod
 
@@ -73,7 +71,7 @@ Games::Risk::Deck - pandemic card deck
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -131,7 +129,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

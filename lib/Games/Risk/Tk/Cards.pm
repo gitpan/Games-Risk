@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Tk::Cards;
-{
-  $Games::Risk::Tk::Cards::VERSION = '3.112820';
-}
 # ABSTRACT: cards listing
-
+$Games::Risk::Tk::Cards::VERSION = '4.000';
 use POE              qw{ Loop::Tk };
 use List::MoreUtils  qw{ any firstidx };
 use Moose;
@@ -136,18 +133,16 @@ sub _do_change_button_state {
     my ($self, $event) = @_[OBJECT, STATE];
 
     my $select;
-    given ($event) {
-        when ('attack') {
-            $self->_set_state('attack');
-            $select = 0;
-        }
-        when ('place_armies') {
-            $self->_set_state('place_armies');
-            $select = $self->_bonus;
-        }
-        default {
-            $select = $self->_state eq 'place_armies' && $self->_bonus;
-        }
+    if ( $event eq 'attack' ) {
+        $self->_set_state('attack');
+        $select = 0;
+    }
+    elsif ( $event eq 'place_armies' ) {
+        $self->_set_state('place_armies');
+        $select = $self->_bonus;
+    }
+    else {
+        $select = $self->_state eq 'place_armies' && $self->_bonus;
     }
     $self->_w('ok')->configure( $select ? (enabled) : (disabled) );
 }
@@ -209,14 +204,12 @@ event _card_clicked => sub {
 
         # compute how much armies it's worth.
         my $combo = join '', map { substr $_, 0, 1 } @types;
-        my $bonus;
-        given ($combo) {
-            when ( [ qw{ aci acj aij cij ajj cjj ijj jjj } ] ) { $bonus = 10; }
-            when ( [ qw{ aaa aaj } ] ) { $bonus = 8; }
-            when ( [ qw{ ccc ccj } ] ) { $bonus = 6; }
-            when ( [ qw{ iii iij } ] ) { $bonus = 4; }
-            default { $bonus = 0; }
-        }
+        my %bonus;
+        $bonus{$_} = 10 for qw{ aci acj aij cij ajj cjj ijj jjj };
+        $bonus{$_} = 8  for qw{ aaa aaj };
+        $bonus{$_} = 6  for qw{ ccc ccj };
+        $bonus{$_} = 4  for qw{ iii iij };
+        my $bonus = $bonus{ $combo } // 0;
         $self->_set_bonus( $bonus );
 
         # update label
@@ -386,6 +379,7 @@ no Moose;
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -395,7 +389,7 @@ Games::Risk::Tk::Cards - cards listing
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -501,7 +495,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

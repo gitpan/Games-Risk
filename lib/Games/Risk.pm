@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk;
-{
-  $Games::Risk::VERSION = '3.112820';
-}
 # ABSTRACT: classical 'risk' board game
-
+$Games::Risk::VERSION = '4.000';
 # although it's not strictly needed to load POE::Kernel manually (since
 # MooseX::POE will load it anyway), we're doing it here to make sure poe
 # will use tk event loop. this can also be done by loading module tk
@@ -242,7 +239,7 @@ sub maps {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -252,7 +249,7 @@ Games::Risk - classical 'risk' board game
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -474,8 +471,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-

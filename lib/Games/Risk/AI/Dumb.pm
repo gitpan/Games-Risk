@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::AI::Dumb;
-{
-  $Games::Risk::AI::Dumb::VERSION = '3.112820';
-}
 # ABSTRACT: dumb ai that does nothing
-
+$Games::Risk::AI::Dumb::VERSION = '4.000';
 use Games::Risk::I18n qw{ T };
 
 use base qw{ Games::Risk::AI };
@@ -100,7 +97,7 @@ sub _description {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -110,7 +107,7 @@ Games::Risk::AI::Dumb - dumb ai that does nothing
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -157,9 +154,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-
-

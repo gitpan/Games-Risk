@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::AI;
-{
-  $Games::Risk::AI::VERSION = '3.112820';
-}
 # ABSTRACT: base class for all ais
-
+$Games::Risk::AI::VERSION = '4.000';
 use POE        qw{ Loop::Tk };
 use Carp;
 use List::Util qw{ shuffle };
@@ -288,7 +285,7 @@ sub _onpriv_start {
 
 1;
 
-
+__END__
 
 =pod
 
@@ -298,7 +295,7 @@ Games::Risk::AI - base class for all ais
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 SYNOPSIS
 
@@ -402,8 +399,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-

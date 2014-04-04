@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Continent;
-{
-  $Games::Risk::Continent::VERSION = '3.112820';
-}
 # ABSTRACT: continent object
-
+$Games::Risk::Continent::VERSION = '4.000';
 use List::MoreUtils qw{ all };
 use Moose;
 use MooseX::Has::Sugar;
@@ -54,6 +51,7 @@ sub is_owned {
 __PACKAGE__->meta->make_immutable;
 1;
 
+__END__
 
 =pod
 
@@ -63,7 +61,7 @@ Games::Risk::Continent - continent object
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -121,7 +119,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-

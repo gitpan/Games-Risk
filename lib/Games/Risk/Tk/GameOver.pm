@@ -12,11 +12,8 @@ use strict;
 use warnings;
 
 package Games::Risk::Tk::GameOver;
-{
-  $Games::Risk::Tk::GameOver::VERSION = '3.112820';
-}
 # ABSTRACT: window used when game is over
-
+$Games::Risk::Tk::GameOver::VERSION = '4.000';
 use Moose;
 use MooseX::Has::Sugar;
 use Tk::Sugar;
@@ -65,6 +62,7 @@ sub _build_gui {
 
 1;
 
+__END__
 
 =pod
 
@@ -74,7 +72,7 @@ Games::Risk::Tk::GameOver - window used when game is over
 
 =head1 VERSION
 
-version 3.112820
+version 4.000
 
 =head1 DESCRIPTION
 
@@ -101,8 +99,3 @@ This is free software, licensed under:
   The GNU General Public License, Version 3, June 2007
 
 =cut
-
-
-__END__
-
-
